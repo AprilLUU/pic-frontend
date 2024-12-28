@@ -1,25 +1,42 @@
 <script lang="ts" setup>
-import { h, ref } from "vue"
-import { HomeOutlined } from "@ant-design/icons-vue"
-import { type MenuProps } from "ant-design-vue"
+import { h, ref, watch, watchEffect } from "vue"
+import {
+  HomeOutlined,
+  LogoutOutlined,
+  UserOutlined
+} from "@ant-design/icons-vue"
+import { message, type MenuProps } from "ant-design-vue"
 import { RouterLink } from "vue-router"
 import { useRouter } from "vue-router"
-import { useUserStore } from "@/stores/user"
+import { storeToRefs } from "pinia"
+import { useLoginUserStore } from "@/stores/loginUser"
+import { userLogoutUsingPost } from "@/api"
+import mapMenusToRoutes from "@/utils/mapMenuToRoute"
 
+
+// 菜单
 const current = ref<string[]>([])
-const items = ref<MenuProps["items"]>([
+const menus = [
   {
-    key: "/home",
+    key: "/",
     icon: () => h(HomeOutlined),
     label: "主页",
     title: "主页"
   },
   {
-    key: "/about",
-    label: "关于",
-    title: "关于"
+    key: "/admin/userManage",
+    label: "用户管理",
+    title: "用户管理"
   }
-])
+]
+const items = ref<MenuProps["items"]>([])
+// 监听loginUser变化，更新items
+watchEffect(() => {
+  items.value = menus.filter((menu) => mapMenusToRoutes(menu))
+  console.log(items.value)
+})
+
+
 const router = useRouter()
 router.afterEach((to, from, next) => {
   current.value = [to.path]
@@ -30,8 +47,21 @@ const onMenuClick = ({ key }: { key: string }) => {
   })
 }
 
-const userStore = useUserStore()
-userStore.fetchLoginUser()
+const loginUserStore = useLoginUserStore()
+const { loginUser } = storeToRefs(loginUserStore)
+
+// 用户注销
+const handleLogout = async () => {
+  const res = (await userLogoutUsingPost()) as any
+
+  if (res.code === 0) {
+    loginUserStore.setLoginUser({})
+    message.success("退出登录成功")
+    router.push("/user/login")
+  } else {
+    message.error("退出登录失败," + res.message)
+  }
+}
 </script>
 
 <template>
@@ -55,8 +85,27 @@ userStore.fetchLoginUser()
       </a-col>
       <a-col flex="120px">
         <div class="user-login-status">
-          <div v-if="userStore.loginUser.id">
-            {{ userStore.loginUser.userName ?? "anonymous" }}
+          <div v-if="loginUser.id">
+            <a-dropdown>
+              <a-space>
+                <a-avatar :src="loginUser.userAvatar" />
+                {{ loginUser.userName ?? "anonymous" }}
+              </a-space>
+              <template #overlay>
+                <a-menu>
+                  <a-menu-item>
+                    <router-link to="/my_space">
+                      <UserOutlined />
+                      我的空间
+                    </router-link>
+                  </a-menu-item>
+                  <a-menu-item @click="handleLogout">
+                    <LogoutOutlined />
+                    退出登录
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
           </div>
           <div v-else>
             <a-button type="primary" href="/user/login">登录</a-button>
