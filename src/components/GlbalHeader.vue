@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { h, ref, watch, watchEffect } from "vue"
+import { h, ref, watchEffect } from "vue"
 import {
   HomeOutlined,
   LogoutOutlined,
@@ -11,8 +11,11 @@ import { useRouter } from "vue-router"
 import { storeToRefs } from "pinia"
 import { useLoginUserStore } from "@/stores/loginUser"
 import { userLogoutUsingPost } from "@/api"
-import mapMenusToRoutes from "@/utils/mapMenuToRoute"
+import checkAccess from "@/access/checkAccess"
 
+const loginUserStore = useLoginUserStore()
+const { loginUser } = storeToRefs(loginUserStore)
+const router = useRouter()
 
 // 菜单
 const current = ref<string[]>([])
@@ -31,24 +34,25 @@ const menus = [
 ]
 const items = ref<MenuProps["items"]>([])
 // 监听loginUser变化，更新items
+// watchEffect执行函数收集依赖
 watchEffect(() => {
-  items.value = menus.filter((menu) => mapMenusToRoutes(menu))
-  console.log(items.value)
+  items.value = menus.filter((menu) => {
+    const allRoutes = router.getRoutes()
+    const route = allRoutes.find((route) => route.path === menu.key)
+    return checkAccess(loginUser.value, route?.meta?.access as string)
+  })
+  // console.log(items.value)
 })
 
-
-const router = useRouter()
 router.afterEach((to, from, next) => {
   current.value = [to.path]
 })
+
 const onMenuClick = ({ key }: { key: string }) => {
   router.push({
     path: key
   })
 }
-
-const loginUserStore = useLoginUserStore()
-const { loginUser } = storeToRefs(loginUserStore)
 
 // 用户注销
 const handleLogout = async () => {
