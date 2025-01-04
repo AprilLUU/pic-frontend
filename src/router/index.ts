@@ -28,6 +28,25 @@ const router = createRouter({
       }
     },
     {
+      path: "/admin/pictureManage",
+      name: "图片管理",
+      component: () => import("@/pages/admin/PictureManagePage.vue"),
+      meta: {
+        access: ACCESS_ENUM.ADMIN
+      }
+    },
+    {
+      path: "/add_picture",
+      name: "创建图片",
+      component: () => import("@/pages/picture/AddPicturePage.vue")
+    },
+    {
+      path: "/picture/:id",
+      name: "图片详情",
+      component: () => import("@/pages/picture/PictureDetailPage.vue"),
+      props: true
+    },
+    {
       path: "/noAuth",
       name: "无权限",
       component: () => import("@/pages/noAuth/NoAuthPage.vue")

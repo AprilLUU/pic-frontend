@@ -12,7 +12,7 @@ const checkAccess = (
 ) => {
   // 获取当前登录用户具有的权限（如果没有 loginUser，则表示未登录）
   const loginUserAccess = loginUser?.userRole ?? ACCESS_ENUM.NOT_LOGIN
-  console.log(needAccess, loginUserAccess)
+  // console.log(needAccess, loginUserAccess)
   if (needAccess === ACCESS_ENUM.NOT_LOGIN) return true
   // 如果用户登录才能访问
   if (needAccess === ACCESS_ENUM.USER) {

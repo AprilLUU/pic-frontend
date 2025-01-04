@@ -41,7 +41,6 @@ const handleSubmit = async (values: API.UserRegisterRequest) => {
     <div class="desc">企业级智能协同云图库</div>
     <a-form
       :model="formState"
-      name="basic"
       autocomplete="off"
       @finish="handleSubmit"
     >

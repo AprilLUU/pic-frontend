@@ -79,21 +79,21 @@ const pagination = computed(() => {
 })
 
 // 表格变化之后，重新获取数据
-const doTableChange = (page: any) => {
+const handleTableChange = (page: any) => {
   searchParams.current = page.current
   searchParams.pageSize = page.pageSize
   fetchData()
 }
 
 // 搜索数据
-const doSearch = () => {
+const handleSearch = () => {
   // 重置页码
   searchParams.current = 1
   fetchData()
 }
 
 // 删除数据
-const doDelete = async (id: string) => {
+const handleDelete = async (id: string) => {
   if (!id) return
   const res = (await deleteUserUsingPost({ id })) as any
   if (res.code === 0) {
@@ -109,7 +109,7 @@ const doDelete = async (id: string) => {
 <template>
   <div id="userManagePage">
     <!-- 搜索表单 -->
-    <a-form layout="inline" :model="searchParams" @finish="doSearch">
+    <a-form layout="inline" :model="searchParams" @finish="handleSearch">
       <a-form-item label="账号">
         <a-input
           v-model:value="searchParams.userAccount"
@@ -134,7 +134,8 @@ const doDelete = async (id: string) => {
       :columns="columns"
       :data-source="dataList"
       :pagination="pagination"
-      @change="doTableChange"
+      :scroll="{ x: 'max-content' }"
+      @change="handleTableChange"
     >
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'userAvatar'">
@@ -152,7 +153,7 @@ const doDelete = async (id: string) => {
           {{ dayjs(record.createTime).format("YYYY-MM-DD HH:mm:ss") }}
         </template>
         <template v-if="column.key === 'action'">
-          <a-button danger @click="doDelete(record.id)">删除</a-button>
+          <a-button danger @click="handleDelete(record.id)">删除</a-button>
         </template>
       </template>
     </a-table>

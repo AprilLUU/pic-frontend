@@ -37,6 +37,19 @@ myAxios.interceptors.response.use(
         // window.location.href = `/user/login?redirect=${window.location.href}`
       }
     }
+
+    // 将string类型字段转换成number类型
+    if (data.code === 0) {
+      const reg = /^[0-9]+$/
+      for (const key in data.data) {
+        if (key === "id") continue
+        const value = data.data[key]
+        if (typeof(value) === "string" && reg.test(value)) {
+          data.data[key] = Number(value)
+        }
+      }
+    }
+
     return data
   },
   function (error) {
