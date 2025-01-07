@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getPictureVoByIdUsingGet } from "@/api"
+import { getPictureByIdUsingGet } from "@/api"
 import { message } from "ant-design-vue"
 import { onMounted, ref } from "vue"
 import PictureDetail from "./c-cpns/PictureDetail.vue"
@@ -8,14 +8,14 @@ const props = defineProps<{
   id: string
 }>()
 
-const picture = ref<API.PictureVO>({})
+const picture = ref<API.Picture>({})
 
 // 获取图片详情
 const fetchPictureDetail = async () => {
   try {
-    const res = (await getPictureVoByIdUsingGet({
+    const res = (await getPictureByIdUsingGet({
       id: props.id
-    })) as API.BaseResponsePictureVO_
+    })) as API.BaseResponsePicture_
     if (res.code === 0 && res.data) {
       picture.value = res.data
     } else {
@@ -47,7 +47,7 @@ onMounted(() => {
       </a-col>
       <!-- 图片信息区 -->
       <a-col :sm="24" :md="8" :xl="6">
-        <PictureDetail :picture="picture" />
+        <PictureDetail :picture="picture" @fetchNewPicture="fetchPictureDetail" />
       </a-col>
     </a-row>
   </div>

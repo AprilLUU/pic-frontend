@@ -46,6 +46,11 @@ const router = createRouter({
       component: () => import("@/pages/picture/PictureDetailPage.vue"),
       props: true
     },
+    {  
+      path: '/add_picture/batch',  
+      name: '批量创建图片',  
+      component: () => import("@/pages/picture/AddPictureBatchPage.vue"),  
+    },
     {
       path: "/noAuth",
       name: "无权限",

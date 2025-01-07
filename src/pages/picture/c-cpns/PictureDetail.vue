@@ -1,20 +1,31 @@
 <script setup lang="ts">
 import { message } from "ant-design-vue"
-import { EditOutlined, DeleteOutlined, DownloadOutlined } from "@ant-design/icons-vue"
+import {
+  EditOutlined,
+  DeleteOutlined,
+  DownloadOutlined
+} from "@ant-design/icons-vue"
 import { computed } from "vue"
 import { useRouter } from "vue-router"
 
 import { deletePictureUsingPost } from "@/api"
 import { useLoginUserStore } from "@/stores"
 import { downloadImage, formatSize } from "@/utils"
+import { PIC_REVIEW_STATUS_ENUM } from "@/constants/picture"
+import checkAccess from "@/access/checkAccess"
+import ACCESS_ENUM from "@/access/accessEnum"
+import { storeToRefs } from "pinia"
+import usePictureOperation from "@/hooks/usePictureOperation"
 
 interface Props {
-  picture: API.PictureVO
+  picture: API.Picture
 }
 
 const props = defineProps<Props>()
+const emit = defineEmits(["fetchNewPicture"])
 
 const loginUserStore = useLoginUserStore()
+const { loginUser } = storeToRefs(loginUserStore)
 // 是否具有编辑权限
 // loginUser变化时重新计算
 const canEdit = computed(() => {
@@ -22,8 +33,8 @@ const canEdit = computed(() => {
   // 未登录不可编辑
   if (!loginUser.id) return false
   // 仅本人或管理员可编辑
-  const user = props.picture.user || {}
-  return loginUser.id === user.id || loginUser.userRole === "admin"
+  // const user = props.picture.user || {}
+  return loginUser.id === props.picture.userId || loginUser.userRole === "admin"
 })
 
 const router = useRouter()
@@ -31,23 +42,22 @@ const router = useRouter()
 const handleEdit = () => {
   router.push("/add_picture?id=" + props.picture.id)
 }
-// 删除
-const handleDelete = async () => {
-  const id = props.picture.id
-  if (!id) {
-    return
-  }
-  const res = (await deletePictureUsingPost({ id })) as any
-  if (res.code === 0) {
-    message.success("删除成功")
-  } else {
-    message.error("删除失败")
-  }
-}
 
 // 处理下载
 const handledownload = () => {
   downloadImage(props.picture.url)
+}
+
+const { handleDelete, handleReview } = usePictureOperation()
+const handleDeleteAndJump = (id: string) => {
+  handleDelete(id).then(() => {
+    router.push("/")
+  })
+}
+const handleReviewAndEmit = (picture: API.Picture, reviewStatus: number) => {
+  handleReview(picture, reviewStatus).then(() => {
+    emit("fetchNewPicture")
+  })
 }
 </script>
 
@@ -99,13 +109,33 @@ const handledownload = () => {
             <DownloadOutlined />
           </template>
         </a-button>
+        <template v-if="checkAccess(loginUser, ACCESS_ENUM.ADMIN)">
+          <a-button
+            v-if="picture.reviewStatus !== PIC_REVIEW_STATUS_ENUM.PASS"
+            @click="() => handleReviewAndEmit(picture, PIC_REVIEW_STATUS_ENUM.PASS)"
+          >
+            通过
+          </a-button>
+          <a-button
+            v-if="picture.reviewStatus !== PIC_REVIEW_STATUS_ENUM.REJECT"
+            danger
+            @click="() => handleReviewAndEmit(picture, PIC_REVIEW_STATUS_ENUM.REJECT)"
+          >
+            拒绝
+          </a-button>
+        </template>
+
         <a-button v-if="canEdit" type="default" @click="handleEdit">
           编辑
           <template #icon>
             <EditOutlined />
           </template>
         </a-button>
-        <a-button v-if="canEdit" danger @click="handleDelete">
+        <a-button
+          v-if="canEdit"
+          danger
+          @click="() => handleDeleteAndJump(picture.id!)"
+        >
           删除
           <template #icon>
             <DeleteOutlined />
