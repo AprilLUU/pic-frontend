@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { message } from "ant-design-vue"
 import {
   EditOutlined,
   DeleteOutlined,
@@ -8,7 +7,6 @@ import {
 import { computed } from "vue"
 import { useRouter } from "vue-router"
 
-import { deletePictureUsingPost } from "@/api"
 import { useLoginUserStore } from "@/stores"
 import { downloadImage, formatSize } from "@/utils"
 import { PIC_REVIEW_STATUS_ENUM } from "@/constants/picture"
