@@ -9,6 +9,8 @@ import {
   PIC_REVIEW_STATUS_OPTIONS
 } from "@/constants/picture"
 import usePictureOperation from "@/hooks/usePictureOperation"
+import SearchArea from "./c-cpns/SearchArea.vue"
+import { pictureFromList } from "./data"
 
 const columns = [
   {
@@ -76,6 +78,10 @@ const searchParams = reactive<API.PictureQueryRequest>({
   sortOrder: "ascend"
 })
 
+const handleUpdateSearchParams = (newSearchParams: any) => {
+  searchParams = newSearchParams
+}
+
 // 获取数据
 const fetchData = async () => {
   const res = (await listPictureByPageUsingPost({
@@ -139,13 +145,23 @@ const handleReviewAndFetchData = (
     <a-flex justify="space-between">
       <h2>图片管理</h2>
       <a-space>
-        <a-button type="primary" href="/add_picture" target="_blank">创建图片</a-button>
-        <a-button type="primary" href="/add_picture/batch" target="_blank" ghost>批量创建图片</a-button>
+        <a-button type="primary" href="/add_picture" target="_blank"
+          >创建图片</a-button
+        >
+        <a-button type="primary" href="/add_picture/batch" target="_blank" ghost
+          >批量创建图片</a-button
+        >
       </a-space>
     </a-flex>
-    <div style="margin-bottom: 16px;"></div>
+    <div style="margin-bottom: 16px"></div>
+    <SearchArea
+      :searchParams="searchParams"
+      :formList="pictureFromList"
+      @update:search-params="handleUpdateSearchParams"
+      @search:formSearch="handleSearch"
+    />
     <!-- 搜索表单 -->
-    <a-form layout="inline" :model="searchParams" @finish="handleSearch">
+    <!-- <a-form layout="inline" :model="searchParams" @finish="handleSearch">
       <a-form-item label="关键词" name="searchText">
         <a-input
           v-model:value="searchParams.searchText"
@@ -180,11 +196,11 @@ const handleReviewAndFetchData = (
       </a-form-item>
       <a-form-item>
         <a-button type="primary" html-type="submit">搜索</a-button>
-      </a-form-item>
-      <!-- <a-button type="primary" href="/add_picture" target="_blank"
+      </a-form-item> -->
+    <!-- <a-button type="primary" href="/add_picture" target="_blank"
         >创建图片</a-button
       > -->
-    </a-form>
+    <!-- </a-form> -->
     <!-- 表格 -->
     <a-table
       :columns="columns"
@@ -241,7 +257,10 @@ const handleReviewAndFetchData = (
             <a-button
               v-if="record.reviewStatus !== PIC_REVIEW_STATUS_ENUM.PASS"
               type="link"
-              @click="() => handleReviewAndFetchData(record, PIC_REVIEW_STATUS_ENUM.PASS)"
+              @click="
+                () =>
+                  handleReviewAndFetchData(record, PIC_REVIEW_STATUS_ENUM.PASS)
+              "
             >
               通过
             </a-button>
@@ -249,7 +268,13 @@ const handleReviewAndFetchData = (
               v-if="record.reviewStatus !== PIC_REVIEW_STATUS_ENUM.REJECT"
               type="link"
               danger
-              @click="() => handleReviewAndFetchData(record, PIC_REVIEW_STATUS_ENUM.REJECT)"
+              @click="
+                () =>
+                  handleReviewAndFetchData(
+                    record,
+                    PIC_REVIEW_STATUS_ENUM.REJECT
+                  )
+              "
             >
               拒绝
             </a-button>
@@ -259,7 +284,10 @@ const handleReviewAndFetchData = (
               target="_blank"
               >编辑</a-button
             >
-            <a-button type="link" danger @click="() => handleDeleteAndFetchData(record.id)"
+            <a-button
+              type="link"
+              danger
+              @click="() => handleDeleteAndFetchData(record.id)"
               >删除</a-button
             >
           </a-space>

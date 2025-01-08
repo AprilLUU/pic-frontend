@@ -3,6 +3,8 @@ import { computed, onMounted, reactive, ref } from "vue"
 import { message } from "ant-design-vue"
 import dayjs from "dayjs"
 import { deleteUserUsingPost, listUserVoByPageUsingPost } from "@/api"
+import SearchArea from "./c-cpns/SearchArea.vue"
+import { userFromList } from "./data"
 
 const columns = [
   {
@@ -109,7 +111,12 @@ const handleDelete = async (id: string) => {
 <template>
   <div id="userManagePage">
     <!-- 搜索表单 -->
-    <a-form layout="inline" :model="searchParams" @finish="handleSearch">
+    <SearchArea
+      v-model="searchParams"
+      :formList="pictureFromList"
+      @search:formSearch="handleSearch"
+    />
+    <!-- <a-form layout="inline" :model="searchParams" @finish="handleSearch">
       <a-form-item label="账号">
         <a-input
           v-model:value="searchParams.userAccount"
@@ -127,7 +134,7 @@ const handleDelete = async (id: string) => {
       <a-form-item>
         <a-button type="primary" html-type="submit">搜索</a-button>
       </a-form-item>
-    </a-form>
+    </a-form> -->
     <div style="margin-bottom: 16px" />
     <!-- 表格 -->
     <a-table
