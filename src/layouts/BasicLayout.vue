@@ -11,9 +11,9 @@ import GlbalHeader from "@/components/GlbalHeader.vue"
       <a-layout-content class="content">
         <router-view />
       </a-layout-content>
-      <a-layout-footer class="footer">
+      <!-- <a-layout-footer class="footer">
         <a href="https://www.codefather.cn" target="_blank"> 这是一个云图库项目～～ </a>
-      </a-layout-footer>
+      </a-layout-footer> -->
     </a-layout>
   </div>
 </template>
@@ -28,7 +28,7 @@ import GlbalHeader from "@/components/GlbalHeader.vue"
 
 #basicLayout .content {
   background: linear-gradient(to right, #fefefe, #fff);
-  margin-bottom: 28px;
+  /* margin-bottom: 28px; */
   padding: 20px;
 }
 
