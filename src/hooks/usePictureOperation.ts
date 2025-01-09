@@ -16,13 +16,13 @@ const usePictureOperation = () => {
     }
   }
 
-  const handleReview = async (picture: API.Picture, reviewStatus: number) => {
+  const handleReview = async (id: string, reviewStatus: number) => {
     const reviewMessage =
       reviewStatus === PIC_REVIEW_STATUS_ENUM.PASS
         ? "管理员操作通过"
         : "管理员操作拒绝"
     const res = (await doPictureReviewUsingPost({
-      id: picture.id,
+      id,
       reviewStatus,
       reviewMessage
     })) as any

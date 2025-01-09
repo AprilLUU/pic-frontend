@@ -4,7 +4,8 @@ import { message } from "ant-design-vue"
 import router from "@/router"
 
 import { userRegisterUsingPost } from "@/api"
-import { useLoginUserStore } from "@/stores/loginUser"
+import { FormArea } from "@/base-ui/form-area"
+import { registerFormList } from "./config"
 
 const formState = reactive<API.UserRegisterRequest>({
   userAccount: "",
@@ -12,7 +13,9 @@ const formState = reactive<API.UserRegisterRequest>({
   checkPassword: ""
 })
 
-const loginUserStore = useLoginUserStore()
+const handleUpdateFormData = (field: string, value: string) => {
+  formState[field as keyof API.UserRegisterRequest] = value as any
+}
 
 const handleSubmit = async (values: API.UserRegisterRequest) => {
   // 校验两次输入的密码是否一致
@@ -37,56 +40,20 @@ const handleSubmit = async (values: API.UserRegisterRequest) => {
 
 <template>
   <div id="userRegisterPage">
-    <h2 class="title">鱼皮云图库 - 用户注册</h2>
+    <h2 class="title">云图库 - 用户注册</h2>
     <div class="desc">企业级智能协同云图库</div>
-    <a-form
-      :model="formState"
-      autocomplete="off"
-      @finish="handleSubmit"
-    >
-      <a-form-item
-        name="userAccount"
-        :rules="[{ required: true, message: '请输入账号' }]"
-      >
-        <a-input
-          v-model:value="formState.userAccount"
-          placeholder="请输入账号"
-        />
-      </a-form-item>
-      <a-form-item
-        name="userPassword"
-        :rules="[
-          { required: true, message: '请输入密码' },
-          { min: 8, message: '密码长度不能小于 8 位' }
-        ]"
-      >
-        <a-input-password
-          v-model:value="formState.userPassword"
-          placeholder="请输入密码"
-        />
-      </a-form-item>
-      <a-form-item
-        name="checkPassword"
-        :rules="[
-          { required: true, message: '请输入确认密码' },
-          { min: 8, message: '确认密码长度不能小于 8 位' }
-        ]"
-      >
-        <a-input-password
-          v-model:value="formState.checkPassword"
-          placeholder="请输入确认密码"
-        />
-      </a-form-item>
-      <div class="tips">
-        已有账号？
-        <RouterLink to="/user/login">去登录</RouterLink>
-      </div>
-      <a-form-item>
-        <a-button type="primary" html-type="submit" style="width: 100%"
-          >注册</a-button
-        >
-      </a-form-item>
-    </a-form>
+    <FormArea
+      :formData="formState"
+      :formList="registerFormList"
+      formLayout="vertical"
+      autoComplete="off"
+      @update:formData="handleUpdateFormData"
+      @submit:formSubmit="handleSubmit"
+    />
+    <div class="tips">
+      已有账号？
+      <RouterLink to="/user/login">去登录</RouterLink>
+    </div>
   </div>
 </template>
 

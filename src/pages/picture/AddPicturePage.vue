@@ -5,6 +5,8 @@ import { useRoute, useRouter } from "vue-router"
 import { editPictureUsingPost, getPictureByIdUsingGet } from "@/api"
 import PictureUpload from "@/components/PictureUpload.vue"
 import UrlUpload from "@/components/UrlUpload.vue"
+import { FormArea } from "@/base-ui/form-area"
+import { pictureEditFormList } from "./config"
 
 const picture = ref<API.PictureVO | API.Picture>()
 const pictureForm = reactive<API.PictureEditRequest>({})
@@ -12,6 +14,10 @@ const pictureForm = reactive<API.PictureEditRequest>({})
 const uploadType = ref<"file" | "url">("file")
 
 const router = useRouter()
+
+const handleUpdateFormData = (field: string, value: string) => {
+  pictureForm[field as keyof API.PictureEditRequest] = value as any
+}
 
 const handleSubmit = async (values: any) => {
   const pictureId = picture.value?.id
@@ -37,6 +43,7 @@ const onSuccess = (newPicture: API.PictureVO) => {
 }
 
 const route = useRoute()
+pictureEditFormList[pictureEditFormList.length - 1].name = route.query?.id ? "修改" : "创建" 
 
 // 获取老数据
 const getOldPicture = async () => {
@@ -77,44 +84,14 @@ onMounted(() => {
         <UrlUpload :picture="picture" :onSuccess="onSuccess" />
       </a-tab-pane>
     </a-tabs>
-    <a-form
+    <FormArea
       v-if="picture"
-      layout="vertical"
-      :model="pictureForm"
-      @finish="handleSubmit"
-    >
-      <a-form-item label="名称" name="name">
-        <a-input v-model:value="pictureForm.name" placeholder="请输入名称" />
-      </a-form-item>
-      <a-form-item label="简介" name="introduction">
-        <a-textarea
-          v-model:value="pictureForm.introduction"
-          placeholder="请输入简介"
-          :autoSize="{ minRows: 2, maxRows: 5 }"
-          allowClear
-        />
-      </a-form-item>
-      <a-form-item label="分类" name="category">
-        <a-auto-complete
-          v-model:value="pictureForm.category"
-          placeholder="请输入分类"
-          allowClear
-        />
-      </a-form-item>
-      <a-form-item label="标签" name="tags">
-        <a-select
-          v-model:value="pictureForm.tags"
-          mode="tags"
-          placeholder="请输入标签"
-          allowClear
-        />
-      </a-form-item>
-      <a-form-item>
-        <a-button type="primary" html-type="submit" style="width: 100%">
-          {{ route.query?.id ? "修改" : "创建" }}
-        </a-button>
-      </a-form-item>
-    </a-form>
+      :formData="pictureForm"
+      :formList="pictureEditFormList"
+      formLayout="vertical"
+      @update:formData="handleUpdateFormData"
+      @submit:formSubmit="handleSubmit"
+    />
   </div>
 </template>
 

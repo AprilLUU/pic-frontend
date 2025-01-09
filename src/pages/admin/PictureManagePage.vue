@@ -1,86 +1,16 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from "vue"
+import { onMounted, reactive, ref } from "vue"
 import { message } from "ant-design-vue"
-import dayjs from "dayjs"
-import { listPictureByPageUsingPost } from "@/api"
-import {
-  PIC_REVIEW_STATUS_ENUM,
-  PIC_REVIEW_STATUS_MAP,
-  PIC_REVIEW_STATUS_OPTIONS
-} from "@/constants/picture"
-import usePictureOperation from "@/hooks/usePictureOperation"
-import SearchArea from "./c-cpns/SearchArea.vue"
-import { pictureFromList } from "./data"
 
-const columns = [
-  {
-    title: "id",
-    dataIndex: "id",
-    width: 80
-  },
-  {
-    title: "图片",
-    dataIndex: "url"
-  },
-  {
-    title: "名称",
-    dataIndex: "name"
-  },
-  {
-    title: "简介",
-    dataIndex: "introduction",
-    ellipsis: true
-  },
-  {
-    title: "类型",
-    dataIndex: "category"
-  },
-  {
-    title: "标签",
-    dataIndex: "tags"
-  },
-  {
-    title: "图片信息",
-    dataIndex: "picInfo"
-  },
-  {
-    title: "图片 id",
-    dataIndex: "userId",
-    width: 80
-  },
-  {
-    title: "审核信息",
-    dataIndex: "reviewMessage"
-  },
-  {
-    title: "创建时间",
-    dataIndex: "createTime"
-  },
-  {
-    title: "编辑时间",
-    dataIndex: "editTime"
-  },
-  {
-    title: "操作",
-    key: "action"
-  }
-]
+import { listPictureByPageUsingPost } from "@/api"
+import usePictureOperation from "@/hooks/usePictureOperation"
+import { FormArea } from "@/base-ui/form-area"
+import PictureTable from "./c-cpns/PictureTable.vue"
+import { pictureFormList } from "./config"
 
 // 定义数据
 const dataList = ref<API.Picture[]>([])
 const total = ref(0)
-
-// 搜索条件
-const searchParams = reactive<API.PictureQueryRequest>({
-  current: 1,
-  pageSize: 10,
-  sortField: "createTime",
-  sortOrder: "ascend"
-})
-
-const handleUpdateSearchParams = (newSearchParams: any) => {
-  searchParams = newSearchParams
-}
 
 // 获取数据
 const fetchData = async () => {
@@ -98,28 +28,30 @@ const fetchData = async () => {
 // 页面加载时获取数据，请求一次
 onMounted(() => fetchData())
 
-// 分页参数
-const pagination = computed(() => {
-  return {
-    current: searchParams.current,
-    pageSize: searchParams.pageSize,
-    total: total.value,
-    showSizeChanger: true,
-    showTotal: (total: number) => `共 ${total} 条`
-  }
+// 搜索条件
+const searchParams = reactive<API.PictureQueryRequest>({
+  current: 1,
+  pageSize: 10,
+  sortField: "createTime",
+  sortOrder: "ascend"
 })
 
-// 表格变化之后，重新获取数据
-const handleTableChange = (page: any) => {
-  searchParams.current = page.current
-  searchParams.pageSize = page.pageSize
-  fetchData()
+const handleUpdateSearchParams = (field: string, value: string) => {
+  // console.log(field, value)
+  searchParams[field as keyof API.PictureQueryRequest] = value as any
 }
 
 // 搜索数据
 const handleSearch = () => {
   // 重置页码
   searchParams.current = 1
+  fetchData()
+}
+
+// 表格变化之后，重新获取数据
+const handleTableChange = (page: any) => {
+  searchParams.current = page.current
+  searchParams.pageSize = page.pageSize
   fetchData()
 }
 
@@ -133,7 +65,7 @@ const handleReviewAndFetchData = (
   picture: API.Picture,
   reviewStatus: number
 ) => {
-  handleReview(picture, reviewStatus).then(() => {
+  handleReview(picture.id!, reviewStatus).then(() => {
     fetchData()
   })
 }
@@ -154,146 +86,22 @@ const handleReviewAndFetchData = (
       </a-space>
     </a-flex>
     <div style="margin-bottom: 16px"></div>
-    <SearchArea
-      :searchParams="searchParams"
-      :formList="pictureFromList"
-      @update:search-params="handleUpdateSearchParams"
-      @search:formSearch="handleSearch"
-    />
     <!-- 搜索表单 -->
-    <!-- <a-form layout="inline" :model="searchParams" @finish="handleSearch">
-      <a-form-item label="关键词" name="searchText">
-        <a-input
-          v-model:value="searchParams.searchText"
-          placeholder="从名称和简介搜索"
-          allow-clear
-        />
-      </a-form-item>
-      <a-form-item label="类型" name="category">
-        <a-input
-          v-model:value="searchParams.category"
-          placeholder="请输入类型"
-          allow-clear
-        />
-      </a-form-item>
-      <a-form-item label="标签" name="tags">
-        <a-select
-          v-model:value="searchParams.tags"
-          mode="tags"
-          placeholder="请输入标签"
-          style="min-width: 180px"
-          allow-clear
-        />
-      </a-form-item>
-      <a-form-item label="审核状态" name="reviewStatus">
-        <a-select
-          v-model:value="searchParams.reviewStatus"
-          :options="PIC_REVIEW_STATUS_OPTIONS"
-          placeholder="请输入审核状态"
-          style="min-width: 180px"
-          allow-clear
-        />
-      </a-form-item>
-      <a-form-item>
-        <a-button type="primary" html-type="submit">搜索</a-button>
-      </a-form-item> -->
-    <!-- <a-button type="primary" href="/add_picture" target="_blank"
-        >创建图片</a-button
-      > -->
-    <!-- </a-form> -->
+    <FormArea
+      :formData="searchParams"
+      :formList="pictureFormList"
+      @update:formData="handleUpdateSearchParams"
+      @submit:formSubmit="handleSearch"
+    />
     <!-- 表格 -->
-    <a-table
-      :columns="columns"
-      :data-source="dataList"
-      :pagination="pagination"
-      :scroll="{ x: 'max-content' }"
-      @change="handleTableChange"
-    >
-      <template #bodyCell="{ column, record }">
-        <template v-if="column.dataIndex === 'url'">
-          <a-image :src="record.url" :width="120" />
-        </template>
-        <!-- 标签 -->
-        <template v-if="column.dataIndex === 'tags'">
-          <a-space wrap>
-            <a-tag v-for="tag in JSON.parse(record.tags || '[]')" :key="tag">{{
-              tag
-            }}</a-tag>
-          </a-space>
-        </template>
-        <!-- 图片信息 -->
-        <template v-if="column.dataIndex === 'picInfo'">
-          <div>格式：{{ record.picFormat }}</div>
-          <div>宽度：{{ record.picWidth }}</div>
-          <div>高度：{{ record.picHeight }}</div>
-          <div>宽高比：{{ record.picScale }}</div>
-          <div>大小：{{ (record.picSize / 1024).toFixed(2) }}KB</div>
-        </template>
-        <!-- 审核信息 -->
-        <template v-if="column.dataIndex === 'reviewMessage'">
-          <div>
-            审核状态：{{
-              PIC_REVIEW_STATUS_MAP[
-                record.reviewStatus as keyof typeof PIC_REVIEW_STATUS_MAP
-              ]
-            }}
-          </div>
-          <div>审核信息：{{ record.reviewMessage }}</div>
-          <div>审核人ID：{{ record.reviewerId }}</div>
-          <div v-if="record.reviewTime">
-            审核时间：{{
-              dayjs(record.reviewTime).format("YYYY-MM-DD HH:mm:ss")
-            }}
-          </div>
-        </template>
-        <template v-if="column.dataIndex === 'createTime'">
-          {{ dayjs(record.createTime).format("YYYY-MM-DD HH:mm:ss") }}
-        </template>
-        <template v-if="column.dataIndex === 'editTime'">
-          {{ dayjs(record.editTime).format("YYYY-MM-DD HH:mm:ss") }}
-        </template>
-        <template v-if="column.key === 'action'">
-          <a-space wrap>
-            <a-button
-              v-if="record.reviewStatus !== PIC_REVIEW_STATUS_ENUM.PASS"
-              type="link"
-              @click="
-                () =>
-                  handleReviewAndFetchData(record, PIC_REVIEW_STATUS_ENUM.PASS)
-              "
-            >
-              通过
-            </a-button>
-            <a-button
-              v-if="record.reviewStatus !== PIC_REVIEW_STATUS_ENUM.REJECT"
-              type="link"
-              danger
-              @click="
-                () =>
-                  handleReviewAndFetchData(
-                    record,
-                    PIC_REVIEW_STATUS_ENUM.REJECT
-                  )
-              "
-            >
-              拒绝
-            </a-button>
-            <a-button
-              type="link"
-              :href="`/add_picture?id=${record.id}`"
-              target="_blank"
-              >编辑</a-button
-            >
-            <a-button
-              type="link"
-              danger
-              @click="() => handleDeleteAndFetchData(record.id)"
-              >删除</a-button
-            >
-          </a-space>
-        </template>
-      </template>
-    </a-table>
+    <PictureTable
+      :dataList="dataList"
+      :searchParams="searchParams"
+      :total="total"
+      @change:tableChange="handleTableChange"
+      @change:delete="handleDeleteAndFetchData"
+      @change:review="handleReviewAndFetchData"
+    />
   </div>
 </template>
 

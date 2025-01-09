@@ -3,6 +3,8 @@ import { message } from "ant-design-vue"
 import { reactive, ref } from "vue"
 import { uploadPictureByBatchUsingPost } from "@/api"
 import { useRouter } from "vue-router"
+import { FormArea } from "@/base-ui/form-area"
+import { taskFormList } from "./config"
 
 const formData = reactive<API.PictureUploadByBatchRequest>({
   count: 10
@@ -10,6 +12,10 @@ const formData = reactive<API.PictureUploadByBatchRequest>({
 const loading = ref(false)
 
 const router = useRouter()
+
+const handleUpdateFormData = (field: string, value: string) => {
+  formData[field as keyof API.PictureUploadByBatchRequest] = value as any
+}
 
 const handleSubmit = async (values: any) => {
   loading.value = true
@@ -31,40 +37,14 @@ const handleSubmit = async (values: any) => {
 <template>
   <div id="addPictureBatchPage">
     <h2 style="margin-bottom: 16px">批量创建图片</h2>
-    <a-form layout="vertical" :model="formData" @finish="handleSubmit">
-      <a-form-item label="关键词" name="searchText">
-        <a-input
-          v-model:value="formData.searchText"
-          placeholder="请输入关键词"
-        />
-      </a-form-item>
-      <a-form-item label="抓取数量" name="count">
-        <a-input-number
-          v-model:value="formData.count"
-          placeholder="请输入数量"
-          style="width: 100%"
-          :min="1"
-          :max="30"
-          allow-clear
-        />
-      </a-form-item>
-      <a-form-item label="名称前缀" name="namePrefix">
-        <a-input
-          v-model:value="formData.namePrefix"
-          placeholder="请输入名称前缀，会自动补充序号"
-        />
-      </a-form-item>
-      <a-form-item>
-        <a-button
-          type="primary"
-          html-type="submit"
-          style="width: 100%"
-          :loading="loading"
-        >
-          执行任务
-        </a-button>
-      </a-form-item>
-    </a-form>
+    <FormArea
+      :loading="loading"
+      :formData="formData"
+      :formList="taskFormList"
+      formLayout="vertical"
+      @update:formData="handleUpdateFormData"
+      @submit:formSubmit="handleSubmit"
+    />
   </div>
 </template>
 

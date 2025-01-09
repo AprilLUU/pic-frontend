@@ -16,7 +16,7 @@ import { storeToRefs } from "pinia"
 import usePictureOperation from "@/hooks/usePictureOperation"
 
 interface Props {
-  picture: API.Picture
+  picture: API.PictureVO
 }
 
 const props = defineProps<Props>()
@@ -52,8 +52,8 @@ const handleDeleteAndJump = (id: string) => {
     router.push("/")
   })
 }
-const handleReviewAndEmit = (picture: API.Picture, reviewStatus: number) => {
-  handleReview(picture, reviewStatus).then(() => {
+const handleReviewAndEmit = (picture: API.PictureVO, reviewStatus: number) => {
+  handleReview(picture.id!, reviewStatus).then(() => {
     emit("fetchNewPicture")
   })
 }
@@ -109,13 +109,11 @@ const handleReviewAndEmit = (picture: API.Picture, reviewStatus: number) => {
         </a-button>
         <template v-if="checkAccess(loginUser, ACCESS_ENUM.ADMIN)">
           <a-button
-            v-if="picture.reviewStatus !== PIC_REVIEW_STATUS_ENUM.PASS"
             @click="() => handleReviewAndEmit(picture, PIC_REVIEW_STATUS_ENUM.PASS)"
           >
             通过
           </a-button>
           <a-button
-            v-if="picture.reviewStatus !== PIC_REVIEW_STATUS_ENUM.REJECT"
             danger
             @click="() => handleReviewAndEmit(picture, PIC_REVIEW_STATUS_ENUM.REJECT)"
           >

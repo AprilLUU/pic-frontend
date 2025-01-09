@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useHomeStore } from "@/stores";
-import { storeToRefs } from "pinia";
+import { useHomeStore } from "@/stores"
+import { storeToRefs } from "pinia"
 import { computed } from "vue"
 import { useRouter } from "vue-router"
 
@@ -15,9 +15,9 @@ const homeStore = useHomeStore()
 const { dataList, loading, total } = storeToRefs(homeStore)
 
 const router = useRouter()
-const handlePictureClick = (picture: API.PictureVO) => {
+const handlePictureClick = (id: number) => {
   router.push({
-    path: `/picture/${picture.id}`
+    path: `/picture/${id}`
   })
 }
 
@@ -49,15 +49,12 @@ const pagination = computed(() => {
       <template #renderItem="{ item: picture }">
         <a-list-item style="padding: 0">
           <!-- 单张图片 -->
-          <a-card
-            hoverable
-            @click="(pirture: API.PictureVO) => handlePictureClick(picture)"
-          >
+          <a-card hoverable @click="() => handlePictureClick(picture.id)">
             <template #cover>
               <img
                 style="height: 180px; object-fit: cover"
                 :alt="picture.name"
-                :src="picture.url"
+                :src="picture.thumbnailUrl ?? picture.url"
               />
             </template>
             <a-card-meta :title="picture.name">
