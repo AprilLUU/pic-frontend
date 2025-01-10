@@ -3,8 +3,8 @@ import { computed } from "vue"
 import dayjs from "dayjs"
 
 interface Props {
-  searchParams: API.PictureQueryRequest
-  dataList: API.Picture[]
+  searchParams: API.UserQueryRequest
+  dataList: API.User[]
   total: number
 }
 

@@ -1,5 +1,6 @@
 import { type FormList } from "@/base-ui/form-area"
 import { PIC_REVIEW_STATUS_OPTIONS } from "@/constants/picture"
+import { SPACE_LEVEL_OPTIONS } from "@/constants/space"
 
 const pictureFormList: FormList[] = [
   {
@@ -67,4 +68,37 @@ const userFormList: FormList[] = [
   }
 ]
 
-export { pictureFormList, userFormList }
+const spaceFormList: FormList[] = [
+  {
+    label: "空间名称",
+    name: "spaceName",
+    field: "spaceName",
+    type: "input",
+    placeholder: "请输入空间名称",
+    allowClear: true
+  },
+  {
+    label: "空间级别",
+    name: "spaceLevel",
+    field: "spaceLevel",
+    type: "select",
+    placeholder: "请输入空间级别",
+    allowClear: true,
+    styleObj: { minWidth: "180px" },
+    options: SPACE_LEVEL_OPTIONS
+  },
+  {
+    label: "用户 id",
+    name: "userId",
+    field: "userId",
+    type: "input",
+    placeholder: "请输入用户 id",
+    allowClear: true
+  },
+  {
+    name: "搜索",
+    type: "button"
+  }
+]
+
+export { pictureFormList, userFormList, spaceFormList }

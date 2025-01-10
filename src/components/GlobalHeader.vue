@@ -40,6 +40,11 @@ const menus = [
     key: "/admin/pictureManage",
     label: "图片管理",
     title: "图片管理"
+  },
+  {
+    key: "/admin/spaceManage",
+    label: "空间管理",
+    title: "空间管理"
   }
 ]
 const items = ref<MenuProps["items"]>([])

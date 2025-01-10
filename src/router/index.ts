@@ -36,7 +36,12 @@ const router = createRouter({
       }
     },
     {
-      path: "/add_picture",
+      path: "/admin/spaceManage",
+      name: "空间管理",
+      component: () => import("@/pages/admin/SpaceManagePage.vue")
+    },
+    {
+      path: "/add_picture/",
       name: "创建图片",
       component: () => import("@/pages/picture/AddPicturePage.vue")
     },
@@ -46,10 +51,26 @@ const router = createRouter({
       component: () => import("@/pages/picture/PictureDetailPage.vue"),
       props: true
     },
-    {  
-      path: '/add_picture/batch',  
-      name: '批量创建图片',  
-      component: () => import("@/pages/picture/AddPictureBatchPage.vue"),  
+    {
+      path: "/add_picture/batch",
+      name: "批量创建图片",
+      component: () => import("@/pages/picture/AddPictureBatchPage.vue")
+    },
+    {
+      path: "/add_space",
+      name: "创建空间",
+      component: () => import("@/pages/space/AddSpacePage.vue")
+    },
+    {
+      path: "/my_space",
+      name: "我的空间",
+      component: () => import("@/pages/space/MySpacePage.vue")
+    },
+    {
+      path: "/space/:id",
+      name: "空间详情",
+      component: () => import("@/pages/space/SpaceDetailPage.vue"),
+      props: true
     },
     {
       path: "/noAuth",

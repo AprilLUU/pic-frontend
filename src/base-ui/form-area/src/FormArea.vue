@@ -10,6 +10,8 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
+  formData: () => {},
+  formList: () => [],
   formLayout: "inline",
   loading: false,
   autoComplete: "on"

@@ -5,6 +5,7 @@ import { ref } from "vue"
 
 interface Props {
   picture?: API.PictureVO | API.Picture
+  spaceId?: string
   onSuccess?: (newPicture: API.PictureVO) => void
 }
 const props = defineProps<Props>()
@@ -21,6 +22,9 @@ const handleUpload = async () => {
     const params: API.PictureUploadRequest = { fileUrl: fileUrl.value }
     if (props.picture) {
       params.id = props.picture.id
+    }
+    if (props.spaceId) {
+      params.spaceId = props.spaceId
     }
     const res = (await uploadPictureByUrlUsingPost(
       params
