@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { onMounted, reactive } from "vue"
+import { onMounted, reactive, ref } from "vue"
 import { storeToRefs } from "pinia"
-import HomeContent from "./c-cpns/HomeContent.vue"
+import PictureList from "@/components/PictureList.vue"
 import HomeCategoryTagBar from "./c-cpns/HomeCategoryTagBar.vue"
 import { useHomeStore } from "@/stores"
 
 const homeStore = useHomeStore()
-const { tagList } = storeToRefs(homeStore)
+const { dataList, tagList, loading, total } = storeToRefs(homeStore)
 
 // 搜索条件
 const searchParams = reactive<API.PictureQueryRequest>({
@@ -40,9 +40,7 @@ const handleSearch = (payload?: any) => {
   homeStore.fetchData(params)
 }
 
-const handleUpdateSearchParams = (newParams: any) => {
-  searchParams.current = newParams.current
-  searchParams.pageSize = newParams.pageSize
+const handlePageChange = () => {
   homeStore.fetchData(searchParams)
 }
 </script>
@@ -62,9 +60,13 @@ const handleUpdateSearchParams = (newParams: any) => {
     <!-- 分类 + 标签 -->
     <HomeCategoryTagBar @search="handleSearch" />
     <!-- 图片列表 -->
-    <HomeContent
-      :searchParams="searchParams"
-      @update:searchParams="handleUpdateSearchParams"
+    <PictureList :dataList="dataList" :loading="loading" />
+    <a-pagination
+      style="text-align: right"
+      v-model:current="searchParams.current"
+      v-model:pageSize="searchParams.pageSize"
+      :total="total"
+      @change="handlePageChange"
     />
   </div>
 </template>

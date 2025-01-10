@@ -6,6 +6,7 @@ import { uploadPictureUsingPost } from "@/api"
 
 interface Props {
   picture?: API.PictureVO | API.Picture
+  spaceId: string
   onSuccess?: (newPicture: API.PictureVO) => void
 }
 const props = defineProps<Props>()
@@ -27,7 +28,12 @@ const beforeUpload = (file: any) => {
 const handleUpload = async ({ file }: any) => {
   loading.value = true
   try {
-    const params = props.picture ? { id: props.picture.id } : {}
+    const params: API.PictureUploadRequest = props.picture
+      ? { id: props.picture.id }
+      : {}
+    if (props.spaceId) {
+      params.spaceId = props.spaceId
+    }
     const res = (await uploadPictureUsingPost(
       params,
       {},

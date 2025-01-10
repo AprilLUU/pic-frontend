@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { message } from "ant-design-vue"
-import { onMounted, reactive, ref } from "vue"
+import { computed, onMounted, reactive, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { editPictureUsingPost, getPictureByIdUsingGet } from "@/api"
 import PictureUpload from "@/components/PictureUpload.vue"
@@ -14,6 +14,15 @@ const pictureForm = reactive<API.PictureEditRequest>({})
 const uploadType = ref<"file" | "url">("file")
 
 const router = useRouter()
+const route = useRoute()
+// 空间 id
+const spaceId = computed(() => {
+  return route.query?.spaceId
+})
+
+pictureEditFormList[pictureEditFormList.length - 1].name = route.query?.id
+  ? "修改"
+  : "创建"
 
 const handleUpdateFormData = (field: string, value: string) => {
   pictureForm[field as keyof API.PictureEditRequest] = value as any
@@ -24,6 +33,7 @@ const handleSubmit = async (values: any) => {
   if (!pictureId) return
   const res = (await editPictureUsingPost({
     id: pictureId,
+    spaceId: spaceId.value,
     ...values
   })) as any
   if (res.code === 0 && res.data) {
@@ -41,9 +51,6 @@ const onSuccess = (newPicture: API.PictureVO) => {
   picture.value = newPicture
   pictureForm.name = newPicture.name
 }
-
-const route = useRoute()
-pictureEditFormList[pictureEditFormList.length - 1].name = route.query?.id ? "修改" : "创建" 
 
 // 获取老数据
 const getOldPicture = async () => {
@@ -74,6 +81,11 @@ onMounted(() => {
     <h2 style="margin-bottom: 16px">
       {{ route.query?.id ? "修改图片" : "创建图片" }}
     </h2>
+    <a-typography-paragraph v-if="spaceId" type="secondary">
+      保存至空间：<a :href="`/space/${spaceId}`" target="_blank">{{
+        spaceId
+      }}</a>
+    </a-typography-paragraph>
     <!-- 选择上传方式 -->
     <a-tabs v-model:activeKey="uploadType"
       >>
@@ -84,6 +96,7 @@ onMounted(() => {
         <UrlUpload :picture="picture" :onSuccess="onSuccess" />
       </a-tab-pane>
     </a-tabs>
+
     <FormArea
       v-if="picture"
       :formData="pictureForm"
