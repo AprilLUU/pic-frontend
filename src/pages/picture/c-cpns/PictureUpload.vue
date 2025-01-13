@@ -3,17 +3,28 @@ import { ref } from "vue"
 import { PlusOutlined, LoadingOutlined } from "@ant-design/icons-vue"
 import { message } from "ant-design-vue"
 import { uploadPictureUsingPost } from "@/api"
+import { useLoginUserStore } from "@/stores"
+import { storeToRefs } from "pinia"
+import { useRouter } from "vue-router"
 
 interface Props {
   picture?: API.PictureVO | API.Picture
-  spaceId: string
+  spaceId?: string
   onSuccess?: (newPicture: API.PictureVO) => void
 }
-const props = defineProps<Props>()
-
+const props = withDefaults(defineProps<Props>(), {
+  spaceId: ""
+})
 const loading = ref<boolean>(false)
+const loginUserStore = useLoginUserStore()
+const { loginUser } = storeToRefs(loginUserStore)
+const router = useRouter()
 
 const beforeUpload = (file: any) => {
+  if (!loginUser) {
+    message.info("请先登录")
+    router.push("/user/login")
+  }
   const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png"
   if (!isJpgOrPng) {
     message.error("不支持上传该格式的图片，推荐 jpg 或 png")

@@ -9,6 +9,7 @@ const props = defineProps<{
   id: string
 }>()
 const space = ref<API.SpaceVO>({})
+const percent = ref(0)
 
 // 获取空间详情
 const fetchSpaceDetail = async () => {
@@ -18,7 +19,15 @@ const fetchSpaceDetail = async () => {
     })) as API.BaseResponseSpaceVO_
     if (res.code === 0 && res.data) {
       space.value = res.data
-      console.log(space.value)
+      // console.log(space.value)
+      // console.log(typeof space.value.totalSize)
+      // console.log(typeof space.value.maxSize)
+      // console.log(typeof percent.value)
+      // 网络请求之后 计算百分比 避免传递给子组件类型错误
+      percent.value = Number(
+        ((space.value.totalSize! * 100) / space.value.maxSize!).toFixed(1)
+      )
+      // console.log(typeof percent.value)
     } else {
       message.error("获取空间详情失败，" + res.message)
     }
@@ -57,7 +66,7 @@ const fetchData = async () => {
   }
   const res = (await listPictureVoByPageUsingPost(
     params
-  )) as API.BaseResponsePageSpaceVO_
+  )) as API.BaseResponsePagePictureVO_
   if (res.code === 0 && res.data) {
     dataList.value = res.data.records ?? []
     total.value = res.data.total ?? 0
@@ -66,6 +75,9 @@ const fetchData = async () => {
   }
   loading.value = false
 }
+
+// console.log(space.value.totalSize, space.value.maxSize)
+// console.log(percent)
 
 // 页面加载时请求一次
 onMounted(() => {
@@ -84,21 +96,22 @@ onMounted(() => {
           :href="`/add_picture?spaceId=${id}`"
           target="_blank"
         >
-          + 创建图片
+          创建图片
         </a-button>
         <a-tooltip
           :title="`占用空间 ${formatSize(space.totalSize)} / ${formatSize(space.maxSize)}`"
         >
-          <a-progress
-            type="circle"
-            :percent="((space!.totalSize * 100) / space!.maxSize).toFixed(1)"
-            :size="42"
-          />
+          <a-progress type="circle" :percent="percent" :size="42" />
         </a-tooltip>
       </a-space>
     </a-flex>
     <!-- 图片列表 -->
-    <PictureList :dataList="dataList" :loading="loading" />
+    <PictureList
+      :dataList="dataList"
+      :loading="loading"
+      :showOp="true"
+      :onReload="fetchData"
+    />
     <a-pagination
       style="text-align: right"
       v-model:current="searchParams.current"

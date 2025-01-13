@@ -45,11 +45,14 @@ myAxios.interceptors.response.use(
     if (data.code === 0) {
       // 在某些接口 如注册 添加用户 直接返回的是用户id 此时 不进行转换
       if (typeof data.data !== "object") return data
-      const reg = /^[0-9]+$/
+      const numReg = /^[0-9]+$/
+      const idReg = /id/i
       for (const key in data.data) {
-        if (key === "id") continue
+        // if (key === "id") continue
+        // 含id的字段不转换
+        if (idReg.test(key)) continue
         const value = data.data[key]
-        if (typeof(value) === "string" && reg.test(value)) {
+        if (typeof(value) === "string" && numReg.test(value)) {
           data.data[key] = Number(value)
         }
       }

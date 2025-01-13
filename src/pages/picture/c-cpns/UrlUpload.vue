@@ -1,22 +1,34 @@
 <script setup lang="ts">
 import { uploadPictureByUrlUsingPost } from "@/api"
+import { useLoginUserStore } from "@/stores"
 import { message } from "ant-design-vue"
+import { storeToRefs } from "pinia"
 import { ref } from "vue"
+import { useRouter } from "vue-router"
 
 interface Props {
   picture?: API.PictureVO | API.Picture
   spaceId?: string
   onSuccess?: (newPicture: API.PictureVO) => void
 }
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  spaceId: ""
+})
 
 const loading = ref<boolean>(false)
 const fileUrl = ref<string>()
+const loginUserStore = useLoginUserStore()
+const { loginUser } = storeToRefs(loginUserStore)
+const router = useRouter()
 
 /**
  * 上传
  */
 const handleUpload = async () => {
+  if (!loginUser) {
+    message.info("请先登录")
+    router.push("/user/login")
+  }
   loading.value = true
   try {
     const params: API.PictureUploadRequest = { fileUrl: fileUrl.value }

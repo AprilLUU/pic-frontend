@@ -15,7 +15,8 @@ const total = ref(0)
 // 获取数据
 const fetchData = async () => {
   const res = (await listPictureByPageUsingPost({
-    ...searchParams
+    ...searchParams,
+    nullSpaceId: true
   })) as API.BaseResponsePagePicture_
   if (res.code === 0 && res.data) {
     dataList.value = res.data.records ?? []

@@ -38,39 +38,60 @@ const router = createRouter({
     {
       path: "/admin/spaceManage",
       name: "空间管理",
-      component: () => import("@/pages/admin/SpaceManagePage.vue")
+      component: () => import("@/pages/admin/SpaceManagePage.vue"),
+      meta: {
+        access: ACCESS_ENUM.ADMIN
+      }
     },
     {
-      path: "/add_picture/",
+      path: "/add_picture",
       name: "创建图片",
-      component: () => import("@/pages/picture/AddPicturePage.vue")
+      component: () => import("@/pages/picture/AddPicturePage.vue"),
+      meta: {
+        access: ACCESS_ENUM.USER
+      }
     },
     {
       path: "/picture/:id",
       name: "图片详情",
       component: () => import("@/pages/picture/PictureDetailPage.vue"),
-      props: true
+      props: true,
+      meta: {
+        access: ACCESS_ENUM.USER
+      }
     },
     {
       path: "/add_picture/batch",
       name: "批量创建图片",
-      component: () => import("@/pages/picture/AddPictureBatchPage.vue")
+      component: () => import("@/pages/picture/AddPictureBatchPage.vue"),
+      meta: {
+        access: ACCESS_ENUM.ADMIN
+      }
     },
     {
       path: "/add_space",
       name: "创建空间",
-      component: () => import("@/pages/space/AddSpacePage.vue")
+      component: () => import("@/pages/space/AddSpacePage.vue"),
+      meta: {
+        access: ACCESS_ENUM.USER
+      }
     },
     {
       path: "/my_space",
       name: "我的空间",
-      component: () => import("@/pages/space/MySpacePage.vue")
+      component: () => import("@/pages/space/MySpacePage.vue"),
+      meta: {
+        access: ACCESS_ENUM.USER
+      }
     },
     {
       path: "/space/:id",
       name: "空间详情",
       component: () => import("@/pages/space/SpaceDetailPage.vue"),
-      props: true
+      props: true,
+      meta: {
+        access: ACCESS_ENUM.USER
+      }
     },
     {
       path: "/noAuth",

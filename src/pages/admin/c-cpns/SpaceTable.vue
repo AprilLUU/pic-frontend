@@ -92,13 +92,13 @@ const handleDelete = (id: string) => {
           </div>
           <div>数量：{{ record.totalCount }} / {{ record.maxCount }}</div>
         </template>
-        <template v-else-if="column.dataIndex === 'createTime'">
+        <template v-if="column.dataIndex === 'createTime'">
           {{ dayjs(record.createTime).format("YYYY-MM-DD HH:mm:ss") }}
         </template>
-        <template v-else-if="column.dataIndex === 'editTime'">
+        <template v-if="column.dataIndex === 'editTime'">
           {{ dayjs(record.editTime).format("YYYY-MM-DD HH:mm:ss") }}
         </template>
-        <template v-else-if="column.key === 'action'">
+        <template v-if="column.key === 'action'">
           <a-space wrap>
             <a-button
               type="link"

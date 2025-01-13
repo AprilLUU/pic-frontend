@@ -26,6 +26,8 @@ const handleSubmit = async (values: API.UserLoginRequest) => {
   if (res.code === 0 && res.data) {
     message.success("登录成功")
     loginUserStore.setLoginUser(res.data)
+    // 获取用户空间信息
+    await loginUserStore.fetchLoginUserSpace()
     router.replace({ path: "/" })
   } else {
     message.error(`登录失败，${res.message}`)

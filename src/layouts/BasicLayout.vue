@@ -47,7 +47,7 @@ import GlobalSider from "@/components/GlobalSider.vue"
   border-inline-end: none !important;
 }
 
-#basicLayout .footer {
+/* #basicLayout .footer {
   background: #efefef;
   padding: 16px;
   position: fixed;
@@ -55,5 +55,5 @@ import GlobalSider from "@/components/GlobalSider.vue"
   left: 0;
   right: 0;
   text-align: center;
-}
+} */
 </style>
