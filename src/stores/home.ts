@@ -9,7 +9,7 @@ import {
 export const useHomeStore = defineStore("home", () => {
   // 数据
   const dataList = ref<API.PictureVO[]>([])
-  const loading = ref(true)
+  const loading = ref(false)
   const total = ref(0)
 
   // 获取数据
@@ -43,6 +43,14 @@ export const useHomeStore = defineStore("home", () => {
     }
   }
 
+  const clearState = () => {
+    dataList.value = []
+    loading.value = false
+    total.value = 0
+    categoryList.value = []
+    tagList.value = []
+  }
+
   return {
     fetchData,
     dataList,
@@ -50,6 +58,7 @@ export const useHomeStore = defineStore("home", () => {
     total,
     categoryList,
     tagList,
-    getTagCategoryOptions
+    getTagCategoryOptions,
+    clearState
   }
 })

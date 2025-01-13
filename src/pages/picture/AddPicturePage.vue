@@ -3,8 +3,8 @@ import { message } from "ant-design-vue"
 import { computed, onMounted, reactive, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { editPictureUsingPost, getPictureByIdUsingGet } from "@/api"
-import PictureUpload from "@/components/PictureUpload.vue"
-import UrlUpload from "@/components/UrlUpload.vue"
+import PictureUpload from "@/pages/picture/c-cpns/PictureUpload.vue"
+import UrlUpload from "@/pages/picture/c-cpns//UrlUpload.vue"
 import { FormArea } from "@/base-ui/form-area"
 import { pictureEditFormList } from "./config"
 
@@ -90,13 +90,12 @@ onMounted(() => {
     <a-tabs v-model:activeKey="uploadType"
       >>
       <a-tab-pane key="file" tab="文件上传">
-        <PictureUpload :picture="picture" :onSuccess="onSuccess" />
+        <PictureUpload :picture="picture" :onSuccess="onSuccess" :spaceId="spaceId as string" />
       </a-tab-pane>
       <a-tab-pane key="url" tab="URL 上传" force-render>
-        <UrlUpload :picture="picture" :onSuccess="onSuccess" />
+        <UrlUpload :picture="picture" :onSuccess="onSuccess" :spaceId="spaceId as string" />
       </a-tab-pane>
     </a-tabs>
-
     <FormArea
       v-if="picture"
       :formData="pictureForm"

@@ -9,6 +9,7 @@ import { taskFormList } from "./config"
 const formData = reactive<API.PictureUploadByBatchRequest>({
   count: 10
 })
+
 const loading = ref(false)
 
 const router = useRouter()

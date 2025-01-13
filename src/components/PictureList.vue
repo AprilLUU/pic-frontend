@@ -1,22 +1,18 @@
 <script setup lang="ts">
-import { useRouter } from "vue-router"
+import PictureItem from "./PictureItem.vue"
 
 interface Props {
-  dataList: any
-  loading: boolean
+  dataList?: API.PictureVO[]
+  loading?: boolean
+  showOp?: boolean
+  onReload?: any
 }
 
 const props = withDefaults(defineProps<Props>(), {
   dataList: () => [],
-  loading: false
+  loading: false,
+  showOp: false
 })
-
-const router = useRouter()
-const handlePictureClick = (id: number) => {
-  router.push({
-    path: `/picture/${id}`
-  })
-}
 </script>
 
 <template>
@@ -29,27 +25,11 @@ const handlePictureClick = (id: number) => {
       <template #renderItem="{ item: picture }">
         <a-list-item style="padding: 0">
           <!-- 单张图片 -->
-          <a-card hoverable @click="() => handlePictureClick(picture.id)">
-            <template #cover>
-              <img
-                style="height: 180px; object-fit: cover"
-                :alt="picture.name"
-                :src="picture.thumbnailUrl ?? picture.url"
-              />
-            </template>
-            <a-card-meta :title="picture.name">
-              <template #description>
-                <a-flex>
-                  <a-tag color="green">
-                    {{ picture.category ?? "默认" }}
-                  </a-tag>
-                  <a-tag v-for="tag in picture.tags" :key="tag">
-                    {{ tag }}
-                  </a-tag>
-                </a-flex>
-              </template>
-            </a-card-meta>
-          </a-card>
+          <PictureItem
+            :picture="picture"
+            :showOp="showOp"
+            :onReload="onReload"
+          />
         </a-list-item>
       </template>
     </a-list>

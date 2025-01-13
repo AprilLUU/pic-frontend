@@ -1,36 +1,26 @@
 <script setup lang="ts">
 import { onMounted } from "vue"
 import { useRouter } from "vue-router"
-import { listSpaceVoByPageUsingPost } from "@/api/spaceController"
 import { message } from "ant-design-vue"
 import { useLoginUserStore } from "@/stores"
+import { storeToRefs } from "pinia"
 
 const router = useRouter()
 const loginUserStore = useLoginUserStore()
+const { loginUser, space } = storeToRefs(loginUserStore)
 
 // 检查用户是否有个人空间
 const checkUserSpace = async () => {
-  const loginUser = loginUserStore.loginUser
-  if (!loginUser?.id) {
+  if (!loginUser.value.id) {
     router.replace("/user/login")
     return
   }
   // 获取用户空间信息
-  const res = await listSpaceVoByPageUsingPost({
-    userId: loginUser.id,
-    current: 1,
-    pageSize: 1
-  }) as API.BaseResponsePageSpaceVO_
-  if (res.code === 0 && res.data) {
-    if (res.data?.records!.length > 0) {
-      const space = res.data.records![0]
-      router.replace(`/space/${space.id}`)
-    } else {
-      router.replace("/add_space")
-      message.warn("请先创建空间")
-    }
+  if (space.value.id) {
+    router.replace(`/space/${space.value.id}`)
   } else {
-    message.error("加载我的空间失败，" + res.message)
+    router.replace("/add_space")
+    message.warn("请先创建空间")
   }
 }
 

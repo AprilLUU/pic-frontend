@@ -12,8 +12,10 @@ import { storeToRefs } from "pinia"
 import { useLoginUserStore } from "@/stores/loginUser"
 import { userLogoutUsingPost } from "@/api"
 import checkAccess from "@/access/checkAccess"
+import { useHomeStore } from "@/stores"
 
 const loginUserStore = useLoginUserStore()
+const homeStore = useHomeStore()
 const { loginUser } = storeToRefs(loginUserStore)
 const router = useRouter()
 
@@ -74,7 +76,10 @@ const handleLogout = async () => {
   const res = (await userLogoutUsingPost()) as any
 
   if (res.code === 0) {
+    // 退出登录 清空store状态
     loginUserStore.setLoginUser({})
+    loginUserStore.setSpace({})
+    homeStore.clearState()
     message.success("退出登录成功")
     router.push("/user/login")
   } else {

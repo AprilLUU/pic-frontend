@@ -38,7 +38,13 @@ const canEdit = computed(() => {
 const router = useRouter()
 // 编辑
 const handleEdit = () => {
-  router.push("/add_picture?id=" + props.picture.id)
+  router.push({
+    path: "/add_picture",
+    query: {
+      id: props.picture.id,
+      spaceId: props.picture.spaceId
+    }
+  })
 }
 
 // 处理下载
