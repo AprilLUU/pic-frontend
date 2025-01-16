@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {
+  ShareAltOutlined,
   EditOutlined,
   DeleteOutlined,
   DownloadOutlined
@@ -17,6 +18,7 @@ import usePictureOperation from "@/hooks/usePictureOperation"
 
 interface Props {
   picture: API.PictureVO
+  onShare?: any
 }
 
 const props = defineProps<Props>()
@@ -52,6 +54,8 @@ const handledownload = () => {
   downloadImage(props.picture.url)
 }
 
+const handleShare = () => props?.onShare()
+
 const { handleDelete, handleReview } = usePictureOperation()
 const handleDeleteAndJump = (id: string) => {
   handleDelete(id).then(() => {
@@ -63,6 +67,7 @@ const handleReviewAndEmit = (picture: API.PictureVO, reviewStatus: number) => {
     emit("fetchNewPicture")
   })
 }
+
 </script>
 
 <template>
@@ -126,6 +131,12 @@ const handleReviewAndEmit = (picture: API.PictureVO, reviewStatus: number) => {
             <DownloadOutlined />
           </template>
         </a-button>
+        <a-button type="primary" ghost @click="handleShare">
+          分享
+          <template #icon>
+            <ShareAltOutlined />
+          </template>
+        </a-button>
         <template v-if="checkAccess(loginUser, ACCESS_ENUM.ADMIN)">
           <a-button
             @click="
@@ -143,7 +154,6 @@ const handleReviewAndEmit = (picture: API.PictureVO, reviewStatus: number) => {
             拒绝
           </a-button>
         </template>
-
         <a-button v-if="canEdit" type="default" @click="handleEdit">
           编辑
           <template #icon>

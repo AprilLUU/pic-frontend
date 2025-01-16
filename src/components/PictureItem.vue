@@ -2,6 +2,7 @@
 import { useRouter } from "vue-router"
 import { message } from "ant-design-vue"
 import {
+  ShareAltOutlined,
   SearchOutlined,
   DeleteOutlined,
   EditOutlined
@@ -13,6 +14,7 @@ interface Props {
   onReload?: any
   showOp?: boolean
   showMeta?: boolean
+  onShare?: any
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -43,6 +45,10 @@ const handleSearch = (picture: API.PictureVO, e: MouseEvent) => {
       pictureId: picture.id
     }
   })
+}
+
+const handleShare = (picture: API.PictureVO, e: MouseEvent) => {
+  props?.onShare(picture, e)
 }
 
 // 编辑
@@ -77,11 +83,7 @@ const handleDelete = async (picture: API.PictureVO, e: MouseEvent) => {
   <div class="picture-item">
     <a-card hoverable @click="() => handlePictureClick(picture.id ?? '')">
       <template #cover>
-        <img
-          v-if="picture?.thumbUrl"
-          style=""
-          :src="picture?.thumbUrl"
-        />
+        <img v-if="picture?.thumbUrl" style="" :src="picture?.thumbUrl" />
         <img
           v-else
           style="height: 180px; object-fit: cover"
@@ -102,18 +104,10 @@ const handleDelete = async (picture: API.PictureVO, e: MouseEvent) => {
         </template>
       </a-card-meta>
       <template v-if="showOp" #actions>
-        <a-space @click="(e: MouseEvent) => handleSearch(picture, e)">
-          <SearchOutlined />
-          搜索
-        </a-space>
-        <a-space @click="(e: MouseEvent) => handleEdit(picture, e)">
-          <EditOutlined />
-          编辑
-        </a-space>
-        <a-space @click="(e: MouseEvent) => handleDelete(picture, e)">
-          <DeleteOutlined />
-          删除
-        </a-space>
+        <SearchOutlined @click="(e: MouseEvent) => handleSearch(picture, e)" />
+        <ShareAltOutlined @click="(e: MouseEvent) => handleShare(picture, e)" />
+        <EditOutlined @click="(e: MouseEvent) => handleEdit(picture, e)" />
+        <DeleteOutlined @click="(e: MouseEvent) => handleDelete(picture, e)" />
       </template>
     </a-card>
   </div>

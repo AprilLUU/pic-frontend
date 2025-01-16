@@ -3,6 +3,8 @@ import { getPictureVoByIdUsingGet } from "@/api"
 import { message } from "ant-design-vue"
 import { onMounted, ref } from "vue"
 import PictureDetail from "./c-cpns/PictureDetail.vue"
+import ShareModal from "@/components/ShareModal.vue"
+import { BASE_URL } from "@/config"
 
 const props = defineProps<{
   id: string
@@ -29,6 +31,17 @@ const fetchPictureDetail = async () => {
 onMounted(() => {
   fetchPictureDetail()
 })
+
+// 分享弹窗引用
+const shareModalRef = ref<typeof ShareModal>()
+// 分享链接
+const shareLink = ref<string>()
+
+// 分享
+const onShare = () => {
+  shareLink.value = `${BASE_URL}/picture/${picture.value.id}`
+  shareModalRef.value?.openModal()
+}
 </script>
 
 <template>
@@ -47,9 +60,14 @@ onMounted(() => {
       </a-col>
       <!-- 图片信息区 -->
       <a-col :sm="24" :md="8" :xl="6">
-        <PictureDetail :picture="picture" @fetchNewPicture="fetchPictureDetail" />
+        <PictureDetail
+          :picture="picture"
+          @fetchNewPicture="fetchPictureDetail"
+          :onShare="onShare"
+        />
       </a-col>
     </a-row>
+    <ShareModal ref="shareModalRef" :link="shareLink" />
   </div>
 </template>
 
