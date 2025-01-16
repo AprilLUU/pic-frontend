@@ -30,7 +30,7 @@ export const useHomeStore = defineStore("home", () => {
   // 分类和标签选项
   const categoryList = ref<string[]>([])
   const tagList = ref<string[]>([])
-
+  
   // 获取标签和分类选项
   const getTagCategoryOptions = async () => {
     const res =

@@ -48,7 +48,7 @@ router.beforeEach(async (to, from, next) => {
     }
     // 如果用户空间存在 且 跳转到对应的空间 以及 对应空间的图片
     if (spaceId) {
-      console.log(space)
+      // console.log(space)
       // 校验用户空间id与跳转id是否一致
       if (space?.id !== spaceId) {
         next("/noAuth")

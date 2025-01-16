@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import { ref } from "vue"
 import { type FormList } from "../types"
 
 interface Props {
-  formData: any
-  formList: FormList[]
+  formData?: any
+  formList?: FormList[]
   formLayout?: string
   loading?: boolean
+  isShowReset?: boolean
   autoComplete?: string
 }
 
@@ -14,18 +16,34 @@ withDefaults(defineProps<Props>(), {
   formList: () => [],
   formLayout: "inline",
   loading: false,
+  isShowReset: false,
   autoComplete: "on"
 })
-const emit = defineEmits(["update:formData", "submit:formSubmit"])
+const emit = defineEmits([
+  "update:formData",
+  "submit:formSubmit",
+  "update:editTime",
+  "reset:formData"
+])
 // const searchParams = defineModel()
 
 const handleValueChange = (value: string, field: string) => {
-  // console.log(value, field)
   emit("update:formData", field, value)
 }
 
 const handleSubmit = (values: any) => {
   emit("submit:formSubmit", values)
+}
+
+const dateRange = ref<any[]>([])
+
+const handleRangeChange = (dates: any[]) => {
+  emit("update:editTime", dates)
+}
+
+const handleResetClick = () => {
+  dateRange.value = []
+  emit("reset:formData")
 }
 </script>
 
@@ -92,6 +110,7 @@ const handleSubmit = (values: any) => {
               :placeholder="item.placeholder"
               :allow-clear="item.allowClear"
               :style="item.styleObj"
+              :options="item.options"
               @update:value="
                 (value: string) => handleValueChange(value, item.field!)
               "
@@ -110,6 +129,17 @@ const handleSubmit = (values: any) => {
               "
             />
           </template>
+          <template v-else-if="item.type === 'date-range-picker'">
+            <a-range-picker
+              :style="item.styleObj"
+              v-model:value="dateRange"
+              :show-time="item.dateRangePicker.showTime"
+              :placeholder="item.dateRangePicker.placeholder"
+              :format="item.dateRangePicker.format"
+              :presets="item.dateRangePicker.rangePresets"
+              @change="handleRangeChange"
+            />
+          </template>
           <template v-else-if="item.type === 'button'">
             <a-button
               :style="item.styleObj"
@@ -118,6 +148,14 @@ const handleSubmit = (values: any) => {
               :loading="loading"
               >{{ item.name }}</a-button
             >
+            <a-button
+              v-if="isShowReset"
+              class="reset-btn"
+              :style="item.styleObj"
+              html-type="reset"
+              @click="handleResetClick"
+              >重置</a-button
+            >
           </template>
         </a-form-item>
       </template>
@@ -125,4 +163,8 @@ const handleSubmit = (values: any) => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.reset-btn {
+  margin-left: 16px;
+}
+</style>

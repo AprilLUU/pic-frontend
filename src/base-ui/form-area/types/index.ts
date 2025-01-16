@@ -17,4 +17,14 @@ export interface FormList {
   max?: number
   // form-item
   rules?: any
+  // date-range-picker
+  dateRangePicker?: IDateRangePicker
+}
+
+interface IDateRangePicker {
+  dateRange?: any[]
+  rangePresets?: any[]
+  format?: string
+  placeholder?: string[]
+  showTime?: boolean
 }

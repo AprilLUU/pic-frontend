@@ -1,25 +1,47 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router"
-import { message, Space } from "ant-design-vue"
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons-vue"
+import { message } from "ant-design-vue"
+import {
+  SearchOutlined,
+  DeleteOutlined,
+  EditOutlined
+} from "@ant-design/icons-vue"
 import { deletePictureUsingPost } from "@/api"
 
 interface Props {
-  picture: API.PictureVO
+  picture: any
   onReload?: any
   showOp?: boolean
+  showMeta?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  showOp: false
+  showOp: false,
+  showMeta: true
 })
-const spaceId = props.picture.spaceId
+const spaceId = props.picture?.spaceId
 const query = spaceId ? { spaceId } : {}
 const router = useRouter()
+
 const handlePictureClick = (id: string) => {
+  if (props.picture?.thumbUrl) {
+    window.open(props.picture?.fromUrl, "_blank")
+  } else {
+    router.push({
+      path: `/picture/${id}`,
+      query
+    })
+  }
+}
+
+// 编辑
+const handleSearch = (picture: API.PictureVO, e: MouseEvent) => {
+  e.stopPropagation()
   router.push({
-    path: `/picture/${id}`,
-    query
+    path: "/search_picture",
+    query: {
+      pictureId: picture.id
+    }
   })
 }
 
@@ -53,15 +75,21 @@ const handleDelete = async (picture: API.PictureVO, e: MouseEvent) => {
 
 <template>
   <div class="picture-item">
-    <a-card hoverable @click="() => handlePictureClick(picture.id)">
+    <a-card hoverable @click="() => handlePictureClick(picture.id ?? '')">
       <template #cover>
         <img
+          v-if="picture?.thumbUrl"
+          style=""
+          :src="picture?.thumbUrl"
+        />
+        <img
+          v-else
           style="height: 180px; object-fit: cover"
-          :alt="picture.name"
-          :src="picture.thumbnailUrl ?? picture.url"
+          :alt="picture?.name"
+          :src="picture?.thumbnailUrl ?? picture?.url"
         />
       </template>
-      <a-card-meta :title="picture.name">
+      <a-card-meta v-if="showMeta" :title="picture.name">
         <template #description>
           <a-flex>
             <a-tag color="green">
@@ -74,6 +102,10 @@ const handleDelete = async (picture: API.PictureVO, e: MouseEvent) => {
         </template>
       </a-card-meta>
       <template v-if="showOp" #actions>
+        <a-space @click="(e: MouseEvent) => handleSearch(picture, e)">
+          <SearchOutlined />
+          搜索
+        </a-space>
         <a-space @click="(e: MouseEvent) => handleEdit(picture, e)">
           <EditOutlined />
           编辑
@@ -87,4 +119,9 @@ const handleDelete = async (picture: API.PictureVO, e: MouseEvent) => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.picture-item img {
+  height: 180px;
+  object-fit: cover;
+}
+</style>

@@ -2,15 +2,16 @@
 import PictureItem from "./PictureItem.vue"
 
 interface Props {
-  dataList?: API.PictureVO[]
+  dataList?: API.PictureVO[] | API.ImageSearchResult[]
   loading?: boolean
   showOp?: boolean
+  showMeta?: boolean
   onReload?: any
 }
-
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   dataList: () => [],
   loading: false,
+  showMeta: true,
   showOp: false
 })
 </script>
@@ -28,6 +29,7 @@ const props = withDefaults(defineProps<Props>(), {
           <PictureItem
             :picture="picture"
             :showOp="showOp"
+            :showMeta="showMeta"
             :onReload="onReload"
           />
         </a-list-item>

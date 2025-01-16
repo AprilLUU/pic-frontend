@@ -72,7 +72,7 @@ const handleDelete = async (id: string) => {
     <a-flex justify="space-between">
       <h2>空间管理</h2>
       <a-space>
-        <a-button type="primary" href="/add_space" target="_blank"
+        <a-button type="primary" href="/add_space"
           >创建空间</a-button
         >
       </a-space>

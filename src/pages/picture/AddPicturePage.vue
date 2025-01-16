@@ -20,9 +20,8 @@ const spaceId = computed(() => {
   return route.query?.spaceId
 })
 
-pictureEditFormList[pictureEditFormList.length - 1].name = route.query?.id
-  ? "修改"
-  : "创建"
+const editName = route.query?.id ? "修改" : "创建"
+pictureEditFormList[pictureEditFormList.length - 1].name = editName
 
 const handleUpdateFormData = (field: string, value: string) => {
   pictureForm[field as keyof API.PictureEditRequest] = value as any
@@ -37,13 +36,13 @@ const handleSubmit = async (values: any) => {
     ...values
   })) as any
   if (res.code === 0 && res.data) {
-    message.success("修改成功")
+    message.success(`${editName}成功`)
     // 跳转到图片详情页
     router.push({
       path: `/picture/${pictureId}`
     })
   } else {
-    message.error("修改失败，" + res.message)
+    message.error(`${editName}失败, ${res.message}`)
   }
 }
 
@@ -90,10 +89,18 @@ onMounted(() => {
     <a-tabs v-model:activeKey="uploadType"
       >>
       <a-tab-pane key="file" tab="文件上传">
-        <PictureUpload :picture="picture" :onSuccess="onSuccess" :spaceId="spaceId as string" />
+        <PictureUpload
+          :picture="picture"
+          :onSuccess="onSuccess"
+          :spaceId="spaceId as string"
+        />
       </a-tab-pane>
       <a-tab-pane key="url" tab="URL 上传" force-render>
-        <UrlUpload :picture="picture" :onSuccess="onSuccess" :spaceId="spaceId as string" />
+        <UrlUpload
+          :picture="picture"
+          :onSuccess="onSuccess"
+          :spaceId="spaceId as string"
+        />
       </a-tab-pane>
     </a-tabs>
     <FormArea

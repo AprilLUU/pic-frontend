@@ -8,7 +8,7 @@ import { computed } from "vue"
 import { useRouter } from "vue-router"
 
 import { useLoginUserStore } from "@/stores"
-import { downloadImage, formatSize } from "@/utils"
+import { downloadImage, formatSize, toHexColor } from "@/utils"
 import { PIC_REVIEW_STATUS_ENUM } from "@/constants/picture"
 import checkAccess from "@/access/checkAccess"
 import ACCESS_ENUM from "@/access/accessEnum"
@@ -104,6 +104,19 @@ const handleReviewAndEmit = (picture: API.PictureVO, reviewStatus: number) => {
         <a-descriptions-item label="大小">
           {{ formatSize(picture.picSize) }}
         </a-descriptions-item>
+        <a-descriptions-item label="主色调">
+          <a-space>
+            {{ picture.picColor ?? "-" }}
+            <div
+              v-if="picture.picColor"
+              :style="{
+                backgroundColor: toHexColor(picture.picColor),
+                width: '16px',
+                height: '16px'
+              }"
+            />
+          </a-space>
+        </a-descriptions-item>
       </a-descriptions>
       <!-- 操作按钮 -->
       <a-space wrap>
@@ -115,13 +128,17 @@ const handleReviewAndEmit = (picture: API.PictureVO, reviewStatus: number) => {
         </a-button>
         <template v-if="checkAccess(loginUser, ACCESS_ENUM.ADMIN)">
           <a-button
-            @click="() => handleReviewAndEmit(picture, PIC_REVIEW_STATUS_ENUM.PASS)"
+            @click="
+              () => handleReviewAndEmit(picture, PIC_REVIEW_STATUS_ENUM.PASS)
+            "
           >
             通过
           </a-button>
           <a-button
             danger
-            @click="() => handleReviewAndEmit(picture, PIC_REVIEW_STATUS_ENUM.REJECT)"
+            @click="
+              () => handleReviewAndEmit(picture, PIC_REVIEW_STATUS_ENUM.REJECT)
+            "
           >
             拒绝
           </a-button>

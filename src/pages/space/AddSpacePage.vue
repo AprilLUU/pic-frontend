@@ -11,6 +11,7 @@ import {
 import { FormArea } from "@/base-ui/form-area"
 import { spaceEditFormList } from "./config"
 import { formatSize } from "@/utils"
+import { useLoginUserStore } from "@/stores"
 
 const space = ref<API.SpaceVO | API.Space>()
 const spaceForm = reactive<API.SpaceAddRequest | API.SpaceUpdateRequest>({})
@@ -18,6 +19,7 @@ const loading = ref(false)
 const spaceLevelList = ref<API.SpaceLevel[]>([])
 const router = useRouter()
 const route = useRoute()
+const loginUserStore = useLoginUserStore()
 spaceEditFormList[spaceEditFormList.length - 1].name = route.query?.id
   ? "修改"
   : "创建"
@@ -55,6 +57,8 @@ const handleSubmit = async (values: any) => {
 
   if (res.code === 0 && res.data) {
     message.success("操作成功")
+    // 如果是创建空间 设置全局空间状态
+    if (!spaceId) await loginUserStore.fetchLoginUserSpace()
     // 跳转到空间详情页
     const path = `/space/${spaceId ?? res.data}`
     router.push({

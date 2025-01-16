@@ -69,6 +69,14 @@ const router = createRouter({
       }
     },
     {
+      path: "/search_picture",
+      name: "图片搜索",
+      component: () => import("@/pages/picture/SearchPicturePage.vue"),
+      meta: {
+        access: ACCESS_ENUM.USER
+      }
+    },
+    {
       path: "/add_space",
       name: "创建空间",
       component: () => import("@/pages/space/AddSpacePage.vue"),

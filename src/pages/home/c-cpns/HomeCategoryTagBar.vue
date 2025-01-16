@@ -10,9 +10,6 @@ const { categoryList, tagList } = storeToRefs(homeStore)
 const selectedCategory = ref<string>("all")
 const selectedTagList = ref<string[]>([])
 
-onMounted(() => {
-  homeStore.getTagCategoryOptions()
-})
 const handleSearch = () => {
   emit("search", {
     selectedCategory: selectedCategory.value,
