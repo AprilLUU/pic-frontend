@@ -9,12 +9,13 @@ import {
 export const useHomeStore = defineStore("home", () => {
   // 数据
   const dataList = ref<API.PictureVO[]>([])
-  const loading = ref(false)
   const total = ref(0)
+  // 分类和标签选项
+  const categoryList = ref<string[]>([])
+  const tagList = ref<string[]>([])
 
   // 获取数据
   const fetchData = async (params: API.PictureQueryRequest) => {
-    loading.value = true
     const res = (await listPictureVoByPageUsingPost(
       params
     )) as API.BaseResponsePagePictureVO_
@@ -24,13 +25,7 @@ export const useHomeStore = defineStore("home", () => {
     } else {
       message.error("获取数据失败，" + res.message)
     }
-    loading.value = false
   }
-
-  // 分类和标签选项
-  const categoryList = ref<string[]>([])
-  const tagList = ref<string[]>([])
-  
   // 获取标签和分类选项
   const getTagCategoryOptions = async () => {
     const res =
@@ -42,22 +37,20 @@ export const useHomeStore = defineStore("home", () => {
       message.error("加载分类标签失败，" + res.message)
     }
   }
-
+  // 清空store状态
   const clearState = () => {
     dataList.value = []
-    loading.value = false
     total.value = 0
     categoryList.value = []
     tagList.value = []
   }
 
   return {
-    fetchData,
     dataList,
-    loading,
     total,
     categoryList,
     tagList,
+    fetchData,
     getTagCategoryOptions,
     clearState
   }

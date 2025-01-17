@@ -1,36 +1,22 @@
 <script setup lang="ts">
-import { getPictureVoByIdUsingGet } from "@/api"
-import { message } from "ant-design-vue"
-import { onMounted, ref } from "vue"
+import { onMounted, onUnmounted, ref } from "vue"
 import PictureDetail from "./c-cpns/PictureDetail.vue"
 import ShareModal from "@/components/ShareModal.vue"
 import { BASE_URL } from "@/config"
+import { usePictureStore } from "@/stores"
+import { storeToRefs } from "pinia"
 
 const props = defineProps<{
   id: string
 }>()
 
-const picture = ref<API.PictureVO>({})
+const pictureStore = usePictureStore()
+const { detailPicture: picture } = storeToRefs(pictureStore)
 
-// 获取图片详情
-const fetchPictureDetail = async () => {
-  try {
-    const res = (await getPictureVoByIdUsingGet({
-      id: props.id
-    })) as API.BaseResponsePictureVO_
-    if (res.code === 0 && res.data) {
-      picture.value = res.data
-    } else {
-      message.error("获取图片详情失败，" + res.message)
-    }
-  } catch (e: any) {
-    message.error("获取图片详情失败：" + e.message)
-  }
-}
-
-onMounted(() => {
-  fetchPictureDetail()
-})
+const fetchPictureDetail = () => pictureStore.getPictureVoById(props.id)
+onMounted(() => fetchPictureDetail())
+// 清空状态
+onUnmounted(() => picture.value = {})
 
 // 分享弹窗引用
 const shareModalRef = ref<typeof ShareModal>()
@@ -39,7 +25,7 @@ const shareLink = ref<string>()
 
 // 分享
 const onShare = () => {
-  shareLink.value = `${BASE_URL}/picture/${picture.value.id}`
+  shareLink.value = `${BASE_URL}/picture/${picture.value!.id}`
   shareModalRef.value?.openModal()
 }
 </script>

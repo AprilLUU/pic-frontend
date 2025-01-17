@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { uploadPictureByUrlUsingPost } from "@/api"
-import { useLoginUserStore } from "@/stores"
 import { message } from "ant-design-vue"
 import { storeToRefs } from "pinia"
 import { ref } from "vue"
 import { useRouter } from "vue-router"
+import { useLoginUserStore, usePictureStore } from "@/stores"
 
 interface Props {
   picture?: API.PictureVO | API.Picture
@@ -19,6 +18,7 @@ const loading = ref<boolean>(false)
 const fileUrl = ref<string>()
 const loginUserStore = useLoginUserStore()
 const { loginUser } = storeToRefs(loginUserStore)
+const pictureStore = usePictureStore()
 const router = useRouter()
 
 /**
@@ -30,29 +30,12 @@ const handleUpload = async () => {
     router.push("/user/login")
   }
   loading.value = true
-  try {
-    const params: API.PictureUploadRequest = { fileUrl: fileUrl.value }
-    if (props.picture) {
-      params.id = props.picture.id
-    }
-    if (props.spaceId) {
-      params.spaceId = props.spaceId
-    }
-    const res = (await uploadPictureByUrlUsingPost(
-      params
-    )) as API.BaseResponsePictureVO_
-    if (res.code === 0 && res.data) {
-      message.success("图片上传成功")
-      // 将上传成功的图片信息传递给父组件
-      props.onSuccess?.(res.data)
-    } else {
-      message.error("图片上传失败，" + res.message)
-    }
-  } catch (error) {
-    message.error("图片上传失败")
-  } finally {
-    loading.value = false
-  }
+  const params: API.PictureUploadRequest = { fileUrl: fileUrl.value }
+  if (props.picture) params.id = props.picture.id
+  if (props.spaceId) params.spaceId = props.spaceId
+  const data = await pictureStore.uploadPitureByUrl(params)
+  props.onSuccess?.(data ?? {})
+  loading.value = false
 }
 </script>
 

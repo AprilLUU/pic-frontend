@@ -1,53 +1,28 @@
 <script setup lang="ts">
-import { message } from "ant-design-vue"
-import { onMounted, reactive, ref } from "vue"
+import { onMounted, onUnmounted, reactive, ref } from "vue"
 import { ColorPicker } from "vue3-colorpicker"
 import "vue3-colorpicker/style.css"
-import {
-  getSpaceVoByIdUsingGet,
-  listPictureVoByPageUsingPost,
-  searchPictureByColorUsingPost
-} from "@/api"
+import { storeToRefs } from "pinia"
 import PictureList from "@/components/PictureList.vue"
 import { FormArea } from "@/base-ui/form-area"
 import { pictureSearchFormList } from "./config"
 import { formatSize } from "@/utils"
+import { useSpaceStore } from "@/stores"
 
 const props = defineProps<{
   id: string
 }>()
 
 // 数据
-const dataList = ref<API.SpaceVO[]>([])
-const total = ref(0)
+const spaceStore = useSpaceStore()
+const {
+  detailSpace: space,
+  picDataList: dataList,
+  picDataTotal: total
+} = storeToRefs(spaceStore)
 const loading = ref(true)
-const space = ref<API.SpaceVO>({})
 const percent = ref(0)
 
-// 获取空间详情
-const fetchSpaceDetail = async () => {
-  try {
-    const res = (await getSpaceVoByIdUsingGet({
-      id: props.id
-    })) as API.BaseResponseSpaceVO_
-    if (res.code === 0 && res.data) {
-      space.value = res.data
-      // console.log(space.value)
-      // console.log(typeof space.value.totalSize)
-      // console.log(typeof space.value.maxSize)
-      // console.log(typeof percent.value)
-      // 网络请求之后 计算百分比 避免传递给子组件类型错误
-      percent.value = Number(
-        ((space.value.totalSize! * 100) / space.value.maxSize!).toFixed(1)
-      )
-      // console.log(typeof percent.value)
-    } else {
-      message.error("获取空间详情失败，" + res.message)
-    }
-  } catch (e: any) {
-    message.error("获取空间详情失败：" + e.message)
-  }
-}
 // 获取数据
 const fetchData = async () => {
   loading.value = true
@@ -56,21 +31,29 @@ const fetchData = async () => {
     spaceId: props.id,
     ...searchParams
   }
-  const res = (await listPictureVoByPageUsingPost(
-    params
-  )) as API.BaseResponsePagePictureVO_
-  if (res.code === 0 && res.data) {
-    dataList.value = res.data.records ?? []
-    total.value = res.data.total ?? 0
-  } else {
-    message.error("获取数据失败，" + res.message)
+
+  if (!space.value.id) {
+    await spaceStore.getSpaceVoById(props.id)
+    // console.log(space.value)
+    // console.log(typeof space.value.totalSize)
+    // console.log(typeof space.value.maxSize)
+    // console.log(typeof percent.value)
+    // 网络请求之后 计算百分比 避免传递给子组件类型错误
+    percent.value = Number(
+      ((space.value.totalSize! * 100) / space.value.maxSize!).toFixed(1)
+    )
+    // console.log(typeof percent.value)
   }
+  await spaceStore.fetchSpacePicture(params)
+
   loading.value = false
 }
 // 页面加载时请求一次
-onMounted(() => {
-  fetchSpaceDetail()
-  fetchData()
+onMounted(() => fetchData())
+onUnmounted(() => {
+  space.value = {}
+  dataList.value = []
+  total.value = 0
 })
 // 分页参数
 const onPageChange = () => fetchData()
@@ -114,19 +97,7 @@ const handleResetFormData = () => {
   fetchData()
 }
 
-const onColorChange = async (color: string) => {
-  const res = (await searchPictureByColorUsingPost({
-    picColor: color,
-    spaceId: props.id
-  })) as any
-  if (res.code === 0 && res.data) {
-    const data = res.data ?? []
-    dataList.value = data
-    total.value = data.length
-  } else {
-    message.error("获取数据失败，" + res.message)
-  }
-}
+const onColorChange = async (color: string) => spaceStore.searchPitureByColor(color)
 </script>
 
 <template>

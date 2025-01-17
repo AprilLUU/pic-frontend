@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { computed } from "vue"
-import dayjs from "dayjs"
 import { SPACE_LEVEL_MAP } from "@/constants/space"
-import { formatSize } from "@/utils"
+import { formatSize, formatTime } from "@/utils"
+import { useAdminTable } from "@/hooks"
 
 interface Props {
   searchParams: API.SpaceQueryRequest
@@ -50,24 +49,10 @@ const columns = [
   }
 ]
 
-// 分页参数
-const pagination = computed(() => {
-  return {
-    current: props.searchParams.current,
-    pageSize: props.searchParams.pageSize,
-    total: props.total,
-    showSizeChanger: true,
-    showTotal: (total: number) => `共 ${total} 条`
-  }
-})
-
-const handleTableChange = (page: any) => {
-  emit("change:tableChange", page)
-}
-
-const handleDelete = (id: string) => {
-  emit("change:delete", id)
-}
+const { pagination, handleTableChange, handleDelete } = useAdminTable(
+  props,
+  emit
+)
 </script>
 
 <template>
@@ -93,17 +78,16 @@ const handleDelete = (id: string) => {
           <div>数量：{{ record.totalCount }} / {{ record.maxCount }}</div>
         </template>
         <template v-if="column.dataIndex === 'createTime'">
-          {{ dayjs(record.createTime).format("YYYY-MM-DD HH:mm:ss") }}
+          {{ formatTime(record.createTime) }}
         </template>
         <template v-if="column.dataIndex === 'editTime'">
-          {{ dayjs(record.editTime).format("YYYY-MM-DD HH:mm:ss") }}
+          {{ formatTime(record.editTime) }}
         </template>
         <template v-if="column.key === 'action'">
           <a-space wrap>
             <a-button
               type="link"
               :href="`/add_space?id=${record.id}`"
-              target="_blank"
             >
               编辑
             </a-button>

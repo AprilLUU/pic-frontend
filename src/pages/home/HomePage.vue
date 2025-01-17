@@ -6,8 +6,8 @@ import HomeCategoryTagBar from "./c-cpns/HomeCategoryTagBar.vue"
 import { useHomeStore } from "@/stores"
 
 const homeStore = useHomeStore()
-const { dataList, tagList, loading, total } = storeToRefs(homeStore)
-
+const { dataList, tagList, total} = storeToRefs(homeStore)
+const loading = ref(false)
 // 搜索条件
 const searchParams = reactive<API.PictureQueryRequest>({
   current: 1,
@@ -16,11 +16,14 @@ const searchParams = reactive<API.PictureQueryRequest>({
   sortOrder: "descend"
 })
 
-// 页面加载时请求一次
-onMounted(() => {
+const fetchData = async () => {
+  loading.value = true
   homeStore.fetchData(searchParams)
-})
-
+  loading.value = false
+}
+// 页面加载时请求一次
+onMounted(() => fetchData())
+const handlePageChange = () => fetchData()
 const handleSearch = (payload?: any) => {
   const { selectedCategory = "", selectedTagList = [] } = payload ?? {}
   // 重置搜索条件
@@ -38,10 +41,6 @@ const handleSearch = (payload?: any) => {
   })
 
   homeStore.fetchData(params)
-}
-
-const handlePageChange = () => {
-  homeStore.fetchData(searchParams)
 }
 </script>
 

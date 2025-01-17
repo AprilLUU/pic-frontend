@@ -48,7 +48,6 @@ const handleEdit = () => {
     }
   })
 }
-
 // 处理下载
 const handledownload = () => {
   downloadImage(props.picture.url)
@@ -67,7 +66,6 @@ const handleReviewAndEmit = (picture: API.PictureVO, reviewStatus: number) => {
     emit("fetchNewPicture")
   })
 }
-
 </script>
 
 <template>
@@ -76,8 +74,8 @@ const handleReviewAndEmit = (picture: API.PictureVO, reviewStatus: number) => {
       <a-descriptions :column="1">
         <a-descriptions-item label="作者">
           <a-space>
-            <a-avatar :size="24" :src="picture.user?.userAvatar" />
-            <div>{{ picture.user?.userName }}</div>
+            <a-avatar :size="24" :src="picture?.user?.userAvatar" />
+            <div>{{ picture?.user?.userName }}</div>
           </a-space>
         </a-descriptions-item>
         <a-descriptions-item label="名称">

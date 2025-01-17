@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { message } from "ant-design-vue"
 import { reactive, ref } from "vue"
-import { uploadPictureByBatchUsingPost } from "@/api"
-import { useRouter } from "vue-router"
 import { FormArea } from "@/base-ui/form-area"
 import { taskFormList } from "./config"
+import { usePictureStore } from "@/stores"
+
+const pictureStore = usePictureStore()
 
 const formData = reactive<API.PictureUploadByBatchRequest>({
   count: 10
@@ -12,25 +12,13 @@ const formData = reactive<API.PictureUploadByBatchRequest>({
 
 const loading = ref(false)
 
-const router = useRouter()
-
 const handleUpdateFormData = (field: string, value: string) => {
   formData[field as keyof API.PictureUploadByBatchRequest] = value as any
 }
 
 const handleSubmit = async (values: any) => {
   loading.value = true
-  const res = (await uploadPictureByBatchUsingPost({
-    ...formData
-  })) as any
-  if (res.code === 0 && res.data) {
-    message.success(`创建成功，共 ${res.data} 条`)
-    router.push({
-      path: "/"
-    })
-  } else {
-    message.error("创建失败，" + res.message)
-  }
+  await pictureStore.uploadPictureByBatch(formData)
   loading.value = false
 }
 </script>

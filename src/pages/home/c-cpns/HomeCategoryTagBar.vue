@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useHomeStore } from "@/stores"
 import { storeToRefs } from "pinia"
-import { ref, onMounted } from "vue"
+import { ref } from "vue"
+import { useHomeStore } from "@/stores"
 
 const emit = defineEmits(["search"])
 

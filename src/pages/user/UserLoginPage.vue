@@ -1,37 +1,23 @@
 <script setup lang="ts">
 import { reactive } from "vue"
-import { useRouter, RouterLink } from "vue-router"
-import { userLoginUsingPost } from "@/api"
-import { useLoginUserStore } from "@/stores/loginUser"
-import { message } from "ant-design-vue"
-
+import { RouterLink } from "vue-router"
 import { FormArea } from "@/base-ui/form-area"
 import { loginFormList } from "./config"
+import { useUserStore } from "@/stores"
 
 const formState = reactive<API.UserLoginRequest>({
   userAccount: "",
   userPassword: ""
 })
 
-const loginUserStore = useLoginUserStore()
-const router = useRouter()
+const userStore = useUserStore()
 
 const handleUpdateFormData = (field: string, value: string) => {
   formState[field as keyof API.UserLoginRequest] = value as any
 }
 
 const handleSubmit = async (values: API.UserLoginRequest) => {
-  const res = (await userLoginUsingPost(values)) as API.BaseResponseLoginUserVO_
-  // console.log(res)
-  if (res.code === 0 && res.data) {
-    message.success("登录成功")
-    loginUserStore.setLoginUser(res.data)
-    // 获取用户空间信息
-    await loginUserStore.fetchLoginUserSpace()
-    router.replace({ path: "/" })
-  } else {
-    message.error(`登录失败，${res.message}`)
-  }
+  userStore.userLogin(values)
 }
 </script>
 

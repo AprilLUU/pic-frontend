@@ -2,8 +2,7 @@
 import { ref } from "vue"
 import { PlusOutlined, LoadingOutlined } from "@ant-design/icons-vue"
 import { message } from "ant-design-vue"
-import { uploadPictureUsingPost } from "@/api"
-import { useLoginUserStore } from "@/stores"
+import { useLoginUserStore, usePictureStore } from "@/stores"
 import { storeToRefs } from "pinia"
 import { useRouter } from "vue-router"
 
@@ -18,6 +17,7 @@ const props = withDefaults(defineProps<Props>(), {
 const loading = ref<boolean>(false)
 const loginUserStore = useLoginUserStore()
 const { loginUser } = storeToRefs(loginUserStore)
+const pictureStore = usePictureStore()
 const router = useRouter()
 
 const beforeUpload = (file: any) => {
@@ -38,26 +38,12 @@ const beforeUpload = (file: any) => {
 
 const handleUpload = async ({ file }: any) => {
   loading.value = true
-  try {
-    const params: API.PictureUploadRequest = props.picture
-      ? { id: props.picture.id }
-      : {}
-    if (props.spaceId) {
-      params.spaceId = props.spaceId
-    }
-    const res = (await uploadPictureUsingPost(
-      params,
-      {},
-      file
-    )) as API.BaseResponsePictureVO_
-    if (res.code === 0 && res.data) {
-      props.onSuccess?.(res.data)
-    } else {
-      message.error("上传图片失败" + res.message)
-    }
-  } catch (err) {
-    message.error("上传图片失败" + err)
-  }
+  const params: API.PictureUploadRequest = props.picture
+    ? { id: props.picture.id }
+    : {}
+  if (props.spaceId) params.spaceId = props.spaceId
+  const data = await pictureStore.uploadPitureByFile(params, file)
+  props.onSuccess?.(data ?? {})
   loading.value = false
 }
 </script>

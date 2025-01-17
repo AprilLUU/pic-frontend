@@ -1,3 +1,4 @@
+import dayjs from "dayjs"
 import { saveAs } from "file-saver"
 
 /**
@@ -32,4 +33,8 @@ export function toHexColor(input: string) {
 
   // 返回标准 #RRGGBB 格式
   return `#${hexColor}`
+}
+
+export function formatTime(time: any) {
+  return dayjs(time).format("YYYY-MM-DD HH:mm:ss")
 }

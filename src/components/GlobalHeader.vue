@@ -5,17 +5,14 @@ import {
   LogoutOutlined,
   UserOutlined
 } from "@ant-design/icons-vue"
-import { message, type MenuProps } from "ant-design-vue"
+import { type MenuProps } from "ant-design-vue"
 import { RouterLink } from "vue-router"
 import { useRouter } from "vue-router"
 import { storeToRefs } from "pinia"
-import { useLoginUserStore } from "@/stores/loginUser"
-import { userLogoutUsingPost } from "@/api"
+import { useLoginUserStore } from "@/stores"
 import checkAccess from "@/access/checkAccess"
-import { useHomeStore } from "@/stores"
 
 const loginUserStore = useLoginUserStore()
-// const homeStore = useHomeStore()
 const { loginUser } = storeToRefs(loginUserStore)
 const router = useRouter()
 
@@ -73,18 +70,7 @@ const onMenuClick = ({ key }: { key: string }) => {
 
 // 用户注销
 const handleLogout = async () => {
-  const res = (await userLogoutUsingPost()) as any
-
-  if (res.code === 0) {
-    // 退出登录 清空store状态
-    loginUserStore.setLoginUser({})
-    loginUserStore.setSpace({})
-    // homeStore.clearState()
-    message.success("退出登录成功")
-    router.push("/user/login")
-  } else {
-    message.error("退出登录失败," + res.message)
-  }
+  loginUserStore.logout()
 }
 </script>
 

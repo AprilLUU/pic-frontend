@@ -25,9 +25,7 @@ const checkUserSpace = async () => {
 }
 
 // 在页面加载时检查用户空间
-onMounted(() => {
-  checkUserSpace()
-})
+onMounted(() => checkUserSpace())
 </script>
 
 <template>

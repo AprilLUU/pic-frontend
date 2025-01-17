@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed } from "vue"
-import dayjs from "dayjs"
+import { useAdminTable } from "@/hooks"
+import { formatTime } from "@/utils";
 
 interface Props {
   searchParams: API.UserQueryRequest
@@ -46,24 +46,10 @@ const columns = [
   }
 ]
 
-// 分页参数
-const pagination = computed(() => {
-  return {
-    current: props.searchParams.current,
-    pageSize: props.searchParams.pageSize,
-    total: props.total,
-    showSizeChanger: true,
-    showTotal: (total: number) => `共 ${total} 条`
-  }
-})
-
-const handleTableChange = (page: any) => {
-  emit("change:tableChange", page)
-}
-
-const handleDelete = (id: string) => {
-  emit("change:delete", id)
-}
+const { pagination, handleTableChange, handleDelete } = useAdminTable(
+  props,
+  emit
+)
 </script>
 
 <template>
@@ -88,10 +74,12 @@ const handleDelete = (id: string) => {
           </div>
         </template>
         <template v-if="column.dataIndex === 'createTime'">
-          {{ dayjs(record.createTime).format("YYYY-MM-DD HH:mm:ss") }}
+          {{ formatTime(record.createTime) }}
         </template>
         <template v-if="column.key === 'action'">
-          <a-button danger @click="() => handleDelete(record.id)">删除</a-button>
+          <a-button danger @click="() => handleDelete(record.id)"
+            >删除</a-button
+          >
         </template>
       </template>
     </a-table>

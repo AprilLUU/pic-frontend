@@ -1,73 +1,30 @@
 <script setup lang="ts">
-import { message } from "ant-design-vue"
-import { onMounted, reactive, ref } from "vue"
-import { useRoute, useRouter } from "vue-router"
-import {
-  addSpaceUsingPost,
-  getSpaceByIdUsingGet,
-  listSpaceLevelUsingGet,
-  updateSpaceUsingPost
-} from "@/api"
+import { onMounted, onUnmounted, reactive, ref } from "vue"
+import { useRoute } from "vue-router"
 import { FormArea } from "@/base-ui/form-area"
 import { spaceEditFormList } from "./config"
 import { formatSize } from "@/utils"
-import { useLoginUserStore } from "@/stores"
+import { useSpaceStore } from "@/stores"
+import { storeToRefs } from "pinia"
 
-const space = ref<API.SpaceVO | API.Space>()
+const spaceStore = useSpaceStore()
+const { space, spaceLevelList } = storeToRefs(spaceStore)
+
 const spaceForm = reactive<API.SpaceAddRequest | API.SpaceUpdateRequest>({})
 const loading = ref(false)
-const spaceLevelList = ref<API.SpaceLevel[]>([])
-const router = useRouter()
 const route = useRoute()
-const loginUserStore = useLoginUserStore()
 spaceEditFormList[spaceEditFormList.length - 1].name = route.query?.id
   ? "修改"
   : "创建"
 
-// 获取空间级别
-const fetchSpaceLevelList = async () => {
-  const res = (await listSpaceLevelUsingGet()) as any
-  if (res.code === 0 && res.data) {
-    spaceLevelList.value = res.data
-  } else {
-    message.error("加载空间级别失败，" + res.message)
-  }
-}
 // 更新表单数据
 const handleUpdateFormData = (field: string, value: string) => {
   spaceForm[field as keyof API.SpaceAddRequest] = value as any
 }
 // 提交
 const handleSubmit = async (values: any) => {
-  const spaceId = space.value?.id
   loading.value = true
-
-  let res
-  if (spaceId) {
-    res = (await updateSpaceUsingPost({
-      id: spaceId,
-      ...values
-    })) as any
-  } else {
-    res = (await addSpaceUsingPost({
-      id: spaceId,
-      ...values
-    })) as any
-  }
-
-  if (res.code === 0 && res.data) {
-    message.success("操作成功")
-    // 如果是创建空间 设置全局空间状态
-    if (!spaceId) await loginUserStore.fetchLoginUserSpace()
-    // 跳转到空间详情页
-    const path = `/space/${spaceId ?? res.data}`
-    router.push({
-      path
-    })
-  } else {
-    message.error("操作失败，" + res.message)
-  }
-  
+  spaceStore.addOrUpdateSpace(values)
   loading.value = false
 }
 // 获取老数据
@@ -75,21 +32,18 @@ const getOldSpace = async () => {
   // 获取数据
   const id = route.query?.id as string
   if (id) {
-    const res = (await getSpaceByIdUsingGet({
-      id
-    })) as API.BaseResponseSpace_
-    if (res.code === 0 && res.data) {
-      const data = res.data
-      space.value = data
-      spaceForm.spaceName = data.spaceName
-      spaceForm.spaceLevel = data.spaceLevel
-    }
+    await spaceStore.getSpaceById(id)
+    spaceForm.spaceName = space.value!.spaceName
+    spaceForm.spaceLevel = space.value!.spaceLevel
   }
 }
 
 onMounted(() => {
-  fetchSpaceLevelList()
+  spaceStore.fetchSpaceLevelList()
   getOldSpace()
+})
+onUnmounted(() => {
+  space.value = {}
 })
 </script>
 

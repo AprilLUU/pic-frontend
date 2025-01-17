@@ -1,34 +1,14 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue"
-import { message } from "ant-design-vue"
-
-import { listPictureByPageUsingPost } from "@/api"
-import usePictureOperation from "@/hooks/usePictureOperation"
+import { reactive } from "vue"
+import { storeToRefs } from "pinia"
+import { useAdminStore } from "@/stores"
 import { FormArea } from "@/base-ui/form-area"
 import PictureTable from "./c-cpns/PictureTable.vue"
 import { pictureFormList } from "./config"
+import { useAdmin, usePictureOperation } from "@/hooks"
 
-// 定义数据
-const dataList = ref<API.Picture[]>([])
-const total = ref(0)
-
-// 获取数据
-const fetchData = async () => {
-  const res = (await listPictureByPageUsingPost({
-    ...searchParams,
-    nullSpaceId: true
-  })) as API.BaseResponsePagePicture_
-  if (res.code === 0 && res.data) {
-    dataList.value = res.data.records ?? []
-    total.value = res.data.total ?? 0
-  } else {
-    message.error("获取数据失败，" + res.message)
-  }
-}
-
-// 页面加载时获取数据，请求一次
-onMounted(() => fetchData())
-
+const adminStore = useAdminStore()
+const { picDataList, picDataTotal } = storeToRefs(adminStore)
 // 搜索条件
 const searchParams = reactive<API.PictureQueryRequest>({
   current: 1,
@@ -37,29 +17,15 @@ const searchParams = reactive<API.PictureQueryRequest>({
   sortOrder: "ascend"
 })
 
-const handleUpdateSearchParams = (field: string, value: string) => {
-  // console.log(field, value)
-  searchParams[field as keyof API.PictureQueryRequest] = value as any
-}
-
-// 搜索数据
-const handleSearch = () => {
-  // 重置页码
-  searchParams.current = 1
-  fetchData()
-}
-
-// 表格变化之后，重新获取数据
-const handleTableChange = (page: any) => {
-  searchParams.current = page.current
-  searchParams.pageSize = page.pageSize
-  fetchData()
-}
+const { handleUpdateSearchParams, handleSearch, handleTableChange } = useAdmin(
+  adminStore.fetchPicData,
+  searchParams
+)
 
 const { handleDelete, handleReview } = usePictureOperation()
 const handleDeleteAndFetchData = (id: string) => {
   handleDelete(id).then(() => {
-    fetchData()
+    adminStore.fetchPicData(searchParams)
   })
 }
 const handleReviewAndFetchData = (
@@ -67,7 +33,7 @@ const handleReviewAndFetchData = (
   reviewStatus: number
 ) => {
   handleReview(picture.id!, reviewStatus).then(() => {
-    fetchData()
+    adminStore.fetchPicData(searchParams)
   })
 }
 </script>
@@ -94,9 +60,9 @@ const handleReviewAndFetchData = (
     />
     <!-- 表格 -->
     <PictureTable
-      :dataList="dataList"
+      :dataList="picDataList"
       :searchParams="searchParams"
-      :total="total"
+      :total="picDataTotal"
       @change:tableChange="handleTableChange"
       @change:delete="handleDeleteAndFetchData"
       @change:review="handleReviewAndFetchData"

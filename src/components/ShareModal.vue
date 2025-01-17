@@ -18,19 +18,17 @@ defineExpose({
 </script>
 
 <template>
-  <div class="share-modal">
-    <ModalArea ref="modalRef" title="分享图片">
-      <div class="share-content">
-        <h4>复制分享链接</h4>
-        <a-typography-link copyable>
-          {{ link }}
-        </a-typography-link>
-        <div style="margin-bottom: 16px" />
-        <h4>手机扫码查看</h4>
-        <a-qrcode :value="link" />
-      </div>
-    </ModalArea>
-  </div>
+  <ModalArea ref="modalRef" title="分享图片">
+    <div class="share-content">
+      <h4>复制分享链接</h4>
+      <a-typography-link copyable>
+        {{ link }}
+      </a-typography-link>
+      <div style="margin-bottom: 16px" />
+      <h4>手机扫码查看</h4>
+      <a-qrcode :value="link" />
+    </div>
+  </ModalArea>
 </template>
 
 <style scoped>

@@ -1,15 +1,35 @@
 import { ref } from "vue"
 import { defineStore } from "pinia"
-import { getLoginUserUsingGet, listSpaceVoByPageUsingPost } from "@/api"
+import { message } from "ant-design-vue"
+import { useRouter } from "vue-router"
+import {
+  getLoginUserUsingGet,
+  listSpaceVoByPageUsingPost,
+  userLogoutUsingPost
+} from "@/api"
 
 export const useLoginUserStore = defineStore("loginUser", () => {
   const loginUser = ref<API.LoginUserVO>({})
   const space = ref<API.SpaceVO>({})
+  const router = useRouter()
 
   const fetchLoginUser = async () => {
     const res = (await getLoginUserUsingGet()) as API.BaseResponseLoginUserVO_
     if (res.code === 0 && res.data) {
       loginUser.value = res.data
+    }
+  }
+
+  const logout = async () => {
+    const res = (await userLogoutUsingPost()) as any
+    if (res.code === 0) {
+      // 退出登录 清空store状态
+      loginUser.value = {}
+      space.value = {}
+      message.success("退出登录成功")
+      router.push("/user/login")
+    } else {
+      message.error("退出登录失败," + res.message)
     }
   }
 
@@ -42,6 +62,7 @@ export const useLoginUserStore = defineStore("loginUser", () => {
     loginUser,
     fetchLoginUser,
     setLoginUser,
+    logout,
     fetchLoginUserSpace,
     space,
     setSpace

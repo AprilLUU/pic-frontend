@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed } from "vue"
-import dayjs from "dayjs"
 import {
   PIC_REVIEW_STATUS_ENUM,
   PIC_REVIEW_STATUS_MAP
 } from "@/constants/picture"
+import { useAdminTable } from "@/hooks"
+import { formatTime } from "@/utils"
 
 interface Props {
   searchParams: API.PictureQueryRequest
@@ -13,7 +13,11 @@ interface Props {
 }
 
 const props = defineProps<Props>()
-const emit = defineEmits(["change:tableChange", "change:delete", "change:review"])
+const emit = defineEmits([
+  "change:tableChange",
+  "change:delete",
+  "change:review"
+])
 
 const columns = [
   {
@@ -74,28 +78,8 @@ const columns = [
   }
 ]
 
-// 分页参数
-const pagination = computed(() => {
-  return {
-    current: props.searchParams.current,
-    pageSize: props.searchParams.pageSize,
-    total: props.total,
-    showSizeChanger: true,
-    showTotal: (total: number) => `共 ${total} 条`
-  }
-})
-
-const handleTableChange = (page: any) => {
-  emit("change:tableChange", page)
-}
-
-const handleDelete = (id: string) => {
-  emit("change:delete", id)
-}
-
-const handleReview = (data: API.Picture, status: number) => {
-  emit("change:review", data, status)
-}
+const { pagination, handleTableChange, handleDelete, handleReview } =
+  useAdminTable(props, emit)
 </script>
 
 <template>
@@ -139,26 +123,21 @@ const handleReview = (data: API.Picture, status: number) => {
           <div>审核信息：{{ record.reviewMessage }}</div>
           <div>审核人ID：{{ record.reviewerId }}</div>
           <div v-if="record.reviewTime">
-            审核时间：{{
-              dayjs(record.reviewTime).format("YYYY-MM-DD HH:mm:ss")
-            }}
+            审核时间：{{ formatTime(record.reviewTime) }}
           </div>
         </template>
         <template v-if="column.dataIndex === 'createTime'">
-          {{ dayjs(record.createTime).format("YYYY-MM-DD HH:mm:ss") }}
+          {{ formatTime(record.createTime) }}
         </template>
         <template v-if="column.dataIndex === 'editTime'">
-          {{ dayjs(record.editTime).format("YYYY-MM-DD HH:mm:ss") }}
+          {{ formatTime(record.editTime) }}
         </template>
         <template v-if="column.key === 'action'">
           <a-space wrap>
             <a-button
               v-if="record.reviewStatus !== PIC_REVIEW_STATUS_ENUM.PASS"
               type="link"
-              @click="
-                () =>
-                  handleReview(record, PIC_REVIEW_STATUS_ENUM.PASS)
-              "
+              @click="() => handleReview(record, PIC_REVIEW_STATUS_ENUM.PASS)"
             >
               通过
             </a-button>
@@ -166,26 +145,14 @@ const handleReview = (data: API.Picture, status: number) => {
               v-if="record.reviewStatus !== PIC_REVIEW_STATUS_ENUM.REJECT"
               type="link"
               danger
-              @click="
-                () =>
-                  handleReview(
-                    record,
-                    PIC_REVIEW_STATUS_ENUM.REJECT
-                  )
-              "
+              @click="() => handleReview(record, PIC_REVIEW_STATUS_ENUM.REJECT)"
             >
               拒绝
             </a-button>
-            <a-button
-              type="link"
-              :href="`/add_picture?id=${record.id}`"
-              target="_blank"
+            <a-button type="link" :href="`/add_picture?id=${record.id}`"
               >编辑</a-button
             >
-            <a-button
-              type="link"
-              danger
-              @click="() => handleDelete(record.id)"
+            <a-button type="link" danger @click="() => handleDelete(record.id)"
               >删除</a-button
             >
           </a-space>

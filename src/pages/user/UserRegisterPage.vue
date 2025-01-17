@@ -1,17 +1,17 @@
 <script lang="ts" setup>
 import { reactive } from "vue"
 import { message } from "ant-design-vue"
-import router from "@/router"
-
-import { userRegisterUsingPost } from "@/api"
 import { FormArea } from "@/base-ui/form-area"
 import { registerFormList } from "./config"
+import { useUserStore } from "@/stores"
 
 const formState = reactive<API.UserRegisterRequest>({
   userAccount: "",
   userPassword: "",
   checkPassword: ""
 })
+
+const userStore = useUserStore()
 
 const handleUpdateFormData = (field: string, value: string) => {
   formState[field as keyof API.UserRegisterRequest] = value as any
@@ -23,18 +23,7 @@ const handleSubmit = async (values: API.UserRegisterRequest) => {
     message.error("两次输入的密码不一致")
     return
   }
-  const res = (await userRegisterUsingPost(values)) as any
-  // console.log(res)
-  // 注册成功，跳转到登录页面
-  if (res.code === 0 && res.data) {
-    message.success("注册成功")
-    router.push({
-      path: "/user/login",
-      replace: true
-    })
-  } else {
-    message.error("注册失败，" + res.message)
-  }
+  userStore.userRegister(values)
 }
 </script>
 

@@ -18,16 +18,14 @@ defineExpose({
 </script>
 
 <template>
-  <div class="modal-area">
-    <a-modal
-      v-model:open="visible"
-      :title="title"
-      :footer="isShowFooter"
-      @cancel="closeModal"
-    >
-      <slot></slot>
-    </a-modal>
-  </div>
+  <a-modal
+    v-model:open="visible"
+    :title="title"
+    :footer="isShowFooter"
+    @cancel="closeModal"
+  >
+    <slot></slot>
+  </a-modal>
 </template>
 
 <style scoped></style>

@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { message } from "ant-design-vue"
-import { computed, onMounted, reactive, ref } from "vue"
-import { useRoute, useRouter } from "vue-router"
-import { editPictureUsingPost, getPictureByIdUsingGet } from "@/api"
+import { storeToRefs } from "pinia"
+import { computed, onMounted, onUnmounted, reactive, ref } from "vue"
+import { useRoute } from "vue-router"
 import PictureUpload from "@/pages/picture/c-cpns/PictureUpload.vue"
 import UrlUpload from "@/pages/picture/c-cpns//UrlUpload.vue"
 import { FormArea } from "@/base-ui/form-area"
 import { pictureEditFormList } from "./config"
+import { usePictureStore } from "@/stores"
 
-const picture = ref<API.PictureVO | API.Picture>()
+const pictureStore = usePictureStore()
+const { picture } = storeToRefs(pictureStore)
 const pictureForm = reactive<API.PictureEditRequest>({})
 
 const uploadType = ref<"file" | "url">("file")
 
-const router = useRouter()
 const route = useRoute()
 // 空间 id
 const spaceId = computed(() => {
@@ -28,22 +28,7 @@ const handleUpdateFormData = (field: string, value: string) => {
 }
 
 const handleSubmit = async (values: any) => {
-  const pictureId = picture.value?.id
-  if (!pictureId) return
-  const res = (await editPictureUsingPost({
-    id: pictureId,
-    spaceId: spaceId.value,
-    ...values
-  })) as any
-  if (res.code === 0 && res.data) {
-    message.success(`${editName}成功`)
-    // 跳转到图片详情页
-    router.push({
-      path: `/picture/${pictureId}`
-    })
-  } else {
-    message.error(`${editName}失败, ${res.message}`)
-  }
+  pictureStore.editPiture(values, spaceId.value as string, editName)
 }
 
 const onSuccess = (newPicture: API.PictureVO) => {
@@ -55,24 +40,18 @@ const onSuccess = (newPicture: API.PictureVO) => {
 const getOldPicture = async () => {
   // 获取数据
   const id = route.query?.id as string
-  if (id) {
-    const res = (await getPictureByIdUsingGet({
-      id
-    })) as API.BaseResponsePicture_
-    if (res.code === 0 && res.data) {
-      const data = res.data
-      picture.value = data
-      pictureForm.name = data.name
-      pictureForm.introduction = data.introduction
-      pictureForm.category = data.category
-      pictureForm.tags = JSON.parse(data.tags ?? "[]")
-    }
+  let data
+  if (id) data = await pictureStore.getPictureById(id)
+  if (data) {
+    pictureForm.name = data.name
+    pictureForm.introduction = data.introduction
+    pictureForm.category = data.category
+    pictureForm.tags = JSON.parse(data.tags ?? "[]")
   }
 }
 
-onMounted(() => {
-  getOldPicture()
-})
+onMounted(() => getOldPicture())
+onUnmounted(() => picture.value = undefined)
 </script>
 
 <template>
