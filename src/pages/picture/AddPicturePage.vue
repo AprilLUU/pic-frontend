@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia"
+import { type ComputedRef } from "vue"
 import { computed, onMounted, onUnmounted, reactive, ref } from "vue"
 import { useRoute } from "vue-router"
 import PictureUpload from "@/pages/picture/c-cpns/PictureUpload.vue"
@@ -18,7 +19,7 @@ const route = useRoute()
 // 空间 id
 const spaceId = computed(() => {
   return route.query?.spaceId
-})
+}) as ComputedRef<string>
 
 const editName = route.query?.id ? "修改" : "创建"
 pictureEditFormList[pictureEditFormList.length - 1].name = editName
@@ -51,7 +52,7 @@ const getOldPicture = async () => {
 }
 
 onMounted(() => getOldPicture())
-onUnmounted(() => picture.value = undefined)
+onUnmounted(() => (picture.value = undefined))
 </script>
 
 <template>
@@ -71,14 +72,14 @@ onUnmounted(() => picture.value = undefined)
         <PictureUpload
           :picture="picture"
           :onSuccess="onSuccess"
-          :spaceId="spaceId as string"
+          :spaceId="spaceId"
         />
       </a-tab-pane>
       <a-tab-pane key="url" tab="URL 上传" force-render>
         <UrlUpload
           :picture="picture"
           :onSuccess="onSuccess"
-          :spaceId="spaceId as string"
+          :spaceId="spaceId"
         />
       </a-tab-pane>
     </a-tabs>

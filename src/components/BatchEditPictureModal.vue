@@ -31,7 +31,7 @@ const handleSubmit = async (values: any) => {
 </script>
 
 <template>
-  <ModalArea ref="modalRef">
+  <ModalArea ref="modalRef" title="批量编辑图片">
     <a-typography-paragraph type="secondary"
       >* 只对当前页面的图片生效</a-typography-paragraph
     >
