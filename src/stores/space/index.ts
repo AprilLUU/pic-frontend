@@ -12,6 +12,7 @@ import {
   updateSpaceUsingPost
 } from "@/api"
 import { useLoginUserStore } from "../loginUser"
+import { editPictureByBatchUsingPost } from "@/api"
 
 export const useSpaceStore = defineStore("space", () => {
   const loginUserStore = useLoginUserStore()
@@ -22,6 +23,7 @@ export const useSpaceStore = defineStore("space", () => {
   const picDataTotal = ref(0)
   const spaceLevelList = ref<API.SpaceLevel[]>([])
 
+  // 创建空间页面请求
   const getSpaceById = async (id: string) => {
     const res = (await getSpaceByIdUsingGet({
       id
@@ -34,7 +36,7 @@ export const useSpaceStore = defineStore("space", () => {
     }
   }
 
-  // 获取空间详情
+  // 获取空间详情请求
   const getSpaceVoById = async (id: string) => {
     try {
       const res = (await getSpaceVoByIdUsingGet({
@@ -50,6 +52,7 @@ export const useSpaceStore = defineStore("space", () => {
     }
   }
 
+  // 空间详情图片列表
   const fetchSpacePicture = async (params: API.PictureQueryRequest) => {
     const res = (await listPictureVoByPageUsingPost(
       params
@@ -62,6 +65,7 @@ export const useSpaceStore = defineStore("space", () => {
     }
   }
 
+  // 创建修改空间请求
   // 获取空间级别
   const fetchSpaceLevelList = async () => {
     const res = (await listSpaceLevelUsingGet()) as any
@@ -100,10 +104,11 @@ export const useSpaceStore = defineStore("space", () => {
     }
   }
 
+  // 空间详情请求
   const searchPitureByColor = async (color: string) => {
     const res = (await searchPictureByColorUsingPost({
       picColor: color,
-      spaceId: space.value.id
+      spaceId: detailSpace.value.id
     })) as any
     if (res.code === 0 && res.data) {
       const data = res.data ?? []
@@ -111,6 +116,20 @@ export const useSpaceStore = defineStore("space", () => {
       picDataTotal.value = data.length
     } else {
       message.error("获取数据失败，" + res.message)
+    }
+  }
+
+  const editPictureByBatch = async (values: any) => {
+    if (!picDataList.value.length) return
+    const res = (await editPictureByBatchUsingPost({
+      pictureIdList: picDataList.value.map((picture) => picture.id),
+      spaceId: detailSpace.value.id,
+      ...values
+    })) as any
+    if (res.code === 0 && res.data) {
+      message.success("操作成功")
+    } else {
+      message.error("操作失败，" + res.message)
     }
   }
 
@@ -132,6 +151,7 @@ export const useSpaceStore = defineStore("space", () => {
     fetchSpaceLevelList,
     addOrUpdateSpace,
     searchPitureByColor,
+    editPictureByBatch,
     clearState
   }
 })

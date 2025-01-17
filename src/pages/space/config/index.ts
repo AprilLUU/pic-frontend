@@ -1,19 +1,6 @@
-import type { FormList } from "@/base-ui/form-area"
-import { SPACE_LEVEL_OPTIONS } from "@/constants/space"
-import { useHomeStore } from "@/stores"
 import dayjs from "dayjs"
-import { storeToRefs } from "pinia"
-
-const homeStore = useHomeStore()
-const { tagList, categoryList } = storeToRefs(homeStore)
-const tagOptions = tagList.value.map((data: string) => ({
-  label: data,
-  value: data
-}))
-const categoryOptions = categoryList.value.map((data: string) => ({
-  label: data,
-  value: data
-}))
+import type { FormList } from "@/base-ui/form-area"
+import { tagOptions, categoryOptions, SPACE_LEVEL_OPTIONS } from "@/constants"
 
 const spaceEditFormList: FormList[] = [
   {

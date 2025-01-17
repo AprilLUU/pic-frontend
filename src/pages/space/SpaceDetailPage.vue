@@ -8,6 +8,9 @@ import { FormArea } from "@/base-ui/form-area"
 import { pictureSearchFormList } from "./config"
 import { formatSize } from "@/utils"
 import { useSpaceStore } from "@/stores"
+import BatchEditPictureModal from "@/components/BatchEditPictureModal.vue"
+import { EditOutlined } from "@ant-design/icons-vue"
+import { h } from "vue"
 
 const props = defineProps<{
   id: string
@@ -97,7 +100,19 @@ const handleResetFormData = () => {
   fetchData()
 }
 
-const onColorChange = async (color: string) => spaceStore.searchPitureByColor(color)
+const onColorChange = async (color: string) =>
+  spaceStore.searchPitureByColor(color)
+
+const batchEditPictureModalRef = ref()
+const handleBatchEdit = () => {
+  batchEditPictureModalRef.value?.openModal()
+}
+// 批量编辑成功后，刷新数据
+const handleFormSubmit = async (values: any) => {
+  await spaceStore.editPictureByBatch(values)
+  batchEditPictureModalRef.value?.closeModal()
+  handleResetFormData()
+}
 </script>
 
 <template>
@@ -124,6 +139,9 @@ const onColorChange = async (color: string) => spaceStore.searchPitureByColor(co
         <a-button type="primary" :href="`/add_picture?spaceId=${id}`">
           创建图片
         </a-button>
+        <a-button :icon="h(EditOutlined)" @click="handleBatchEdit">
+          批量编辑</a-button
+        >
         <a-tooltip
           :title="`占用空间 ${formatSize(space.totalSize)} / ${formatSize(space.maxSize)}`"
         >
@@ -145,6 +163,10 @@ const onColorChange = async (color: string) => spaceStore.searchPitureByColor(co
       :total="total"
       :show-total="() => `图片总数 ${total} / ${space.maxCount}`"
       @change="onPageChange"
+    />
+    <BatchEditPictureModal
+      ref="batchEditPictureModalRef"
+      @submit:form-submit="handleFormSubmit"
     />
   </div>
 </template>

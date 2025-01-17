@@ -13,7 +13,8 @@ const visible = ref(false)
 const openModal = () => (visible.value = true)
 const closeModal = () => (visible.value = false)
 defineExpose({
-  openModal
+  openModal,
+  closeModal
 })
 </script>
 
