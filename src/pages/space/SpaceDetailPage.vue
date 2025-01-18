@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, reactive, ref } from "vue"
+import { onMounted, onUnmounted, reactive, ref, h } from "vue"
 import { ColorPicker } from "vue3-colorpicker"
+
 import "vue3-colorpicker/style.css"
+import { EditOutlined } from "@ant-design/icons-vue"
 import { storeToRefs } from "pinia"
 import PictureList from "@/components/PictureList.vue"
 import { FormArea } from "@/base-ui/form-area"
@@ -9,8 +11,8 @@ import { pictureSearchFormList } from "./config"
 import { formatSize } from "@/utils"
 import { useSpaceStore } from "@/stores"
 import BatchEditPictureModal from "@/components/BatchEditPictureModal.vue"
-import { EditOutlined } from "@ant-design/icons-vue"
-import { h } from "vue"
+import ShareModal from "@/components/ShareModal.vue"
+import { FRONTEND_BASE_URL } from "@/config"
 
 const props = defineProps<{
   id: string
@@ -113,6 +115,18 @@ const handleFormSubmit = async (values: any) => {
   batchEditPictureModalRef.value?.closeModal()
   handleResetFormData()
 }
+
+// 分享弹窗引用
+const shareModalRef = ref<typeof ShareModal>()
+// 分享链接
+const shareLink = ref<string>()
+
+// 分享
+const onShare = (picture: API.PictureVO, e: Event) => {
+  e.stopPropagation()
+  shareLink.value = `${FRONTEND_BASE_URL}/picture/${picture.id}`
+  shareModalRef.value?.openModal()
+}
 </script>
 
 <template>
@@ -155,6 +169,7 @@ const handleFormSubmit = async (values: any) => {
       :loading="loading"
       :showOp="true"
       :onReload="fetchData"
+      :onShare="onShare"
     />
     <a-pagination
       style="text-align: right"
@@ -164,6 +179,7 @@ const handleFormSubmit = async (values: any) => {
       :show-total="() => `图片总数 ${total} / ${space.maxCount}`"
       @change="onPageChange"
     />
+    <ShareModal ref="shareModalRef" :link="shareLink" />
     <BatchEditPictureModal
       ref="batchEditPictureModalRef"
       @submit:form-submit="handleFormSubmit"

@@ -2,7 +2,7 @@
 import { onMounted, onUnmounted, ref } from "vue"
 import PictureDetail from "./c-cpns/PictureDetail.vue"
 import ShareModal from "@/components/ShareModal.vue"
-import { BASE_URL } from "@/config"
+import { FRONTEND_BASE_URL } from "@/config"
 import { usePictureStore } from "@/stores"
 import { storeToRefs } from "pinia"
 
@@ -16,7 +16,7 @@ const { detailPicture: picture } = storeToRefs(pictureStore)
 const fetchPictureDetail = () => pictureStore.getPictureVoById(props.id)
 onMounted(() => fetchPictureDetail())
 // 清空状态
-onUnmounted(() => picture.value = {})
+onUnmounted(() => (picture.value = {}))
 
 // 分享弹窗引用
 const shareModalRef = ref<typeof ShareModal>()
@@ -25,7 +25,7 @@ const shareLink = ref<string>()
 
 // 分享
 const onShare = () => {
-  shareLink.value = `${BASE_URL}/picture/${picture.value!.id}`
+  shareLink.value = `${FRONTEND_BASE_URL}/picture/${picture.value!.id}`
   shareModalRef.value?.openModal()
 }
 </script>

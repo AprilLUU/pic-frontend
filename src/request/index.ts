@@ -1,9 +1,10 @@
 import axios from "axios"
 import { message } from "ant-design-vue"
+import { BACKEND_BASE_URL } from "@/config"
 
 // 创建 Axios 实例
 const myAxios = axios.create({
-  baseURL: "",
+  baseURL: BACKEND_BASE_URL,
   timeout: 60000,
   withCredentials: true
 })
@@ -52,7 +53,7 @@ myAxios.interceptors.response.use(
         // 含id的字段不转换
         if (idReg.test(key)) continue
         const value = data.data[key]
-        if (typeof(value) === "string" && numReg.test(value)) {
+        if (typeof value === "string" && numReg.test(value)) {
           data.data[key] = Number(value)
         }
       }

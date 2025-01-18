@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia"
-import { type ComputedRef } from "vue"
+import { h, type ComputedRef } from "vue"
 import { computed, onMounted, onUnmounted, reactive, ref } from "vue"
 import { useRoute } from "vue-router"
 import PictureUpload from "@/pages/picture/c-cpns/PictureUpload.vue"
@@ -8,6 +8,8 @@ import UrlUpload from "@/pages/picture/c-cpns//UrlUpload.vue"
 import { FormArea } from "@/base-ui/form-area"
 import { pictureEditFormList } from "./config"
 import { usePictureStore } from "@/stores"
+import { EditOutlined } from "@ant-design/icons-vue"
+import ImageCropper from "./c-cpns/ImageCropper.vue"
 
 const pictureStore = usePictureStore()
 const { picture } = storeToRefs(pictureStore)
@@ -28,13 +30,22 @@ const handleUpdateFormData = (field: string, value: string) => {
   pictureForm[field as keyof API.PictureEditRequest] = value as any
 }
 
+const imageCropperRef = ref()
+
 const handleSubmit = async (values: any) => {
   pictureStore.editPiture(values, spaceId.value as string, editName)
+}
+
+const handleEditPicture = () => {
+  imageCropperRef.value?.openModal()
 }
 
 const onSuccess = (newPicture: API.PictureVO) => {
   picture.value = newPicture
   pictureForm.name = newPicture.name
+}
+const onCropSuccess = (newPicture: API.PictureVO) => {
+  picture.value = newPicture
 }
 
 // 获取老数据
@@ -83,6 +94,18 @@ onUnmounted(() => (picture.value = undefined))
         />
       </a-tab-pane>
     </a-tabs>
+    <div v-if="picture" class="edit-bar">
+      <a-button :icon="h(EditOutlined)" @click="handleEditPicture"
+        >编辑图片</a-button
+      >
+      <ImageCropper
+        ref="imageCropperRef"
+        :imageUrl="picture?.url"
+        :picture="picture"
+        :spaceId="spaceId"
+        :onSuccess="onCropSuccess"
+      />
+    </div>
     <FormArea
       v-if="picture"
       :formData="pictureForm"
@@ -98,5 +121,10 @@ onUnmounted(() => (picture.value = undefined))
 #addPicturePage {
   max-width: 720px;
   margin: 0 auto;
+}
+
+#addPicturePage .edit-bar {
+  text-align: center;
+  margin: 16px 0;
 }
 </style>
