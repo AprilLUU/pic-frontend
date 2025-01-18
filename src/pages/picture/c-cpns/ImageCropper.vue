@@ -54,19 +54,7 @@ const handleConfirm = () => {
   })
 }
 
-/**
- * 截图实现原理 html2canvas
- * 1. 获取img元素
- * 2. 创建canvas元素操作img
- * 3. 使用canvas裁剪图片 canvas.drawImage(img)
- *    截图的区域可以根据截图框相对于图片的偏移量来计算
- * 4. 返回截图的二进制流Blob，canvas.toBlob
- */
-
-/**
- * 上传
- * @param file
- */
+// 上传
 const handleUpload = async ({ file }: any) => {
   loading.value = true
   const params: API.PictureUploadRequest = props.picture
