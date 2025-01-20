@@ -3,8 +3,10 @@ import { message } from "ant-design-vue"
 import { useRouter } from "vue-router"
 import { ref } from "vue"
 import {
+  createPictureOutPaintingTaskUsingPost,
   editPictureUsingPost,
   getPictureByIdUsingGet,
+  getPictureOutPaintingTaskUsingGet,
   getPictureVoByIdUsingGet,
   searchPictureByPictureUsingPost,
   uploadPictureByBatchUsingPost,
@@ -14,10 +16,17 @@ import {
 
 export const usePictureStore = defineStore("picture", () => {
   const router = useRouter()
+  // 创建/修改图片页
   const picture = ref<API.PictureVO | API.Picture>()
+  // 图片详情页
   const detailPicture = ref<API.PictureVO>({})
+  // 图片搜索页
   const searchPicture = ref<API.PictureVO>({})
   const searchDataList = ref<API.ImageSearchResult[]>([])
+  // AI扩图弹窗
+  // 任务id
+  const taskId = ref<string>()
+
 
   const uploadPitureByFile = async (
     params: API.PictureUploadRequest,
@@ -127,6 +136,35 @@ export const usePictureStore = defineStore("picture", () => {
     }
   }
 
+  const createPictureOutPaintingTask = async (pictureId: string) => {
+    const res = (await createPictureOutPaintingTaskUsingPost({
+      pictureId,
+      // 可以根据需要设置扩图参数
+      parameters: {
+        xScale: 2,
+        yScale: 2
+      }
+    })) as API.BaseResponseCreateOutPaintingTaskResponse_
+    if (res.code === 0 && res.data) {
+      message.success("创建任务成功，请耐心等待，不要退出界面")
+      console.log(res.data.output?.taskId)
+      taskId.value = res.data.output?.taskId ?? ""
+      return res.code
+    } else {
+      message.error("创建任务失败，" + res.message)
+    }
+  }
+
+  const getPictureOutPaintingTask = async () => {
+    const res = (await getPictureOutPaintingTaskUsingGet({
+      taskId: taskId.value
+    })) as API.BaseResponseGetOutPaintingTaskResponse_
+    if (res.code === 0 && res.data) {
+      const taskResult = res.data.output
+      return taskResult
+    }
+  }
+
   // 清空store状态
   const clearState = () => {
     picture.value = undefined
@@ -139,6 +177,7 @@ export const usePictureStore = defineStore("picture", () => {
     detailPicture,
     searchPicture,
     searchDataList,
+    taskId,
     uploadPitureByUrl,
     uploadPictureByBatch,
     uploadPitureByFile,
@@ -146,6 +185,8 @@ export const usePictureStore = defineStore("picture", () => {
     getPictureVoById,
     editPiture,
     searchPictureByPicture,
+    createPictureOutPaintingTask,
+    getPictureOutPaintingTask,
     clearState
   }
 })
