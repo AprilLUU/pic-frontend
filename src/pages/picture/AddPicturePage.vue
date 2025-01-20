@@ -94,7 +94,7 @@ onUnmounted(() => (picture.value = undefined))
         />
       </a-tab-pane>
     </a-tabs>
-    <div v-if="picture" class="edit-bar">
+    <div v-if="picture && spaceId" class="edit-bar">
       <a-button :icon="h(EditOutlined)" @click="handleEditPicture"
         >编辑图片</a-button
       >

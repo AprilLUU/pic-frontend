@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import "vue-cropper/dist/index.css"
-import { VueCropper } from "vue-cropper"
-import { computed, onMounted, ref } from "vue"
+import { computed, ref } from "vue"
 import ModalArea from "@/base-ui/modal-area/src/ModalArea.vue"
 import { usePictureStore } from "@/stores"
+import PictureEditArea from "@/base-ui/picture-edit-area/src/PictureEditArea.vue"
 
 interface Props {
   imageUrl?: string
-  picture?: API.PictureVO
+  picture?: API.PictureVO | API.Picture
   spaceId?: string
   onSuccess?: (newPicture: API.PictureVO) => void
 }
@@ -26,40 +25,16 @@ defineExpose({
   closeModal
 })
 
-// 编辑器组件的引用
-const cropperRef = ref()
-
-// 向左旋转
-const rotateLeft = () => {
-  cropperRef.value.rotateLeft()
-}
-
-// 向右旋转
-const rotateRight = () => {
-  cropperRef.value.rotateRight()
-}
-
-// 缩放
-const changeScale = (num: number) => {
-  cropperRef.value.changeScale(num)
-}
-
-// 确认裁剪
-const handleConfirm = () => {
-  cropperRef.value.getCropBlob((blob: Blob) => {
-    const fileName = (props.picture?.name || "image") + ".png"
-    const file = new File([blob], fileName, { type: blob.type })
-    // 上传图片
-    handleUpload({ file })
-  })
+const handleConfimEditPicture = (blob: Blob) => {
+  const fileName = (props.picture?.name || "image") + ".png"
+  const file = new File([blob], fileName, { type: blob.type })
+  handleUpload(file)
 }
 
 // 上传
-const handleUpload = async ({ file }: any) => {
+const handleUpload = async (file: any) => {
   loading.value = true
-  const params: API.PictureUploadRequest = props.picture
-    ? { id: props.picture.id }
-    : {}
+  const params: API.PictureUploadRequest = { id: props.picture?.id }
   params.spaceId = props.spaceId
   const data = await pictureStore.uploadPitureByFile(params, file)
   props.onSuccess?.(data ?? {})
@@ -70,39 +45,13 @@ const handleUpload = async ({ file }: any) => {
 
 <template>
   <ModalArea ref="modalRef" class="image-cropper" title="编辑图片">
-    <vue-cropper
-      ref="cropperRef"
-      :img="imageUrl"
-      :autoCrop="true"
-      :fixedBox="false"
-      :centerBox="true"
-      :canMove="false"
-      :canMoveBox="true"
-      :info="true"
-      outputType="png"
+    <PictureEditArea
+      :imageUrl="imageUrl"
+      :loading="loading"
+      :cropperStyle="{ height: '400px' }"
+      @confirm:editPicture="handleConfimEditPicture"
     />
-    <div style="margin-bottom: 16px" />
-    <!-- 图片操作 -->
-    <div class="image-cropper-actions">
-      <a-space>
-        <a-button @click="rotateLeft">向左旋转</a-button>
-        <a-button @click="rotateRight">向右旋转</a-button>
-        <a-button @click="changeScale(1)">放大</a-button>
-        <a-button @click="changeScale(-1)">缩小</a-button>
-        <a-button type="primary" :loading="loading" @click="handleConfirm"
-          >确认</a-button
-        >
-      </a-space>
-    </div>
   </ModalArea>
 </template>
 
-<style scoped>
-.image-cropper .image-cropper-actions{
-  text-align: center;
-}
-
-.image-cropper .vue-cropper {
-  height: 400px !important;
-}
-</style>
+<style scoped></style>

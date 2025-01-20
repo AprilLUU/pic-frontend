@@ -48,7 +48,7 @@ const handleResetClick = () => {
 </script>
 
 <template>
-  <div class="search-area">
+  <div class="form-area">
     <a-form
       :layout="formLayout"
       :model="formData"
@@ -133,10 +133,10 @@ const handleResetClick = () => {
             <a-range-picker
               :style="item.styleObj"
               v-model:value="dateRange"
-              :show-time="item.dateRangePicker.showTime"
-              :placeholder="item.dateRangePicker.placeholder"
-              :format="item.dateRangePicker.format"
-              :presets="item.dateRangePicker.rangePresets"
+              :show-time="item.dateRangePicker?.showTime"
+              :placeholder="item.dateRangePicker?.placeholder"
+              :format="item.dateRangePicker?.format"
+              :presets="item.dateRangePicker?.rangePresets"
               @change="handleRangeChange"
             />
           </template>
