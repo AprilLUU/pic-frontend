@@ -1,6 +1,8 @@
 ## TODO 瀑布流图片展示+虚拟滚动
 vue-waterfall-plugin-next+vue-virtual-scroller
 
+## TODO 接入图配文 文生图大模型
+
 ## number类型溢出问题
 由于后端id字段为long类型，到前端js会发生溢出，后端响应中将long以及int等number类型转换成了string类型
 某些非id字段在请求时为number类型，会发生类型不匹配问题

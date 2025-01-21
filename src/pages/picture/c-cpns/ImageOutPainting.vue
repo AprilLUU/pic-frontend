@@ -31,6 +31,7 @@ defineExpose({
  */
 const createTask = async () => {
   if (!props.picture?.id) return
+  message.info("正在生成图片，请稍后")
   const code = await pictureStore.createPictureOutPaintingTask(props.picture.id)
   // 创建成功 开始轮询
   if (code === 0) startPolling()
@@ -43,7 +44,7 @@ const clearPolling = () => {
   if (pollingTimer) {
     clearInterval(pollingTimer)
     pollingTimer = null
-    taskId.value = ""
+    taskId.value = undefined
   }
 }
 
@@ -59,7 +60,7 @@ const startPolling = () => {
         resultImageUrl.value = res.outputImageUrl
         clearPolling()
       } else if (res?.taskStatus === "FAILED") {
-        message.error("扩图任务失败")
+        message.error("扩图任务失败" + res.message)
         clearPolling()
       }
     } catch (err) {
@@ -74,14 +75,26 @@ const startPolling = () => {
 onUnmounted(() => clearPolling())
 
 // 上传
-const handleUpload = async ({ file }: any) => {
+const handleUpload = async () => {
   loading.value = true
+  // const queryIndex = resultImageUrl.value?.indexOf("?")
+  // let fileUrl =
+  //   queryIndex === -1
+  //     ? resultImageUrl.value
+  //     : resultImageUrl.value?.slice(0, queryIndex)
+  // const fileNameIndex = fileUrl!.lastIndexOf("/")
+  // const suffixIndex = fileUrl!.lastIndexOf(".")
+  // const fileName = fileUrl!.slice(fileNameIndex + 1, suffixIndex)
+  // fileUrl = fileUrl?.replace(fileName, props.picture!.name!)
+  // console.log(fileUrl)
+  // 设置picName，让图片能正确更新
   const params: API.PictureUploadRequest = {
     id: props.picture?.id,
+    picName: props.picture?.name,
     fileUrl: resultImageUrl.value,
     spaceId: props.spaceId
   }
-  const data = await pictureStore.uploadPitureByFile(params, file)
+  const data = await pictureStore.uploadPitureByUrl(params)
   props.onSuccess?.(data ?? {})
   closeModal.value()
   loading.value = false
@@ -90,12 +103,12 @@ const handleUpload = async ({ file }: any) => {
 
 <template>
   <ModalArea ref="modalRef" title="AI扩图">
-    <a-row gutter="16">
-      <a-col span="12">
+    <a-row :gutter="16">
+      <a-col :span="12">
         <h4>原始图片</h4>
         <img class="image" :src="picture?.url" :alt="picture?.name" />
       </a-col>
-      <a-col span="12">
+      <a-col :span="12">
         <h4>扩图结果</h4>
         <img
           v-if="resultImageUrl"
@@ -106,9 +119,18 @@ const handleUpload = async ({ file }: any) => {
       </a-col>
     </a-row>
     <div style="margin-bottom: 16px" />
-    <a-flex gap="16" justify="center">
-      <a-button type="primary" ghost @click="createTask">生成图片</a-button>
-      <a-button type="primary" @click="handleUpload">应用结果</a-button>
+    <a-flex :gap="16" justify="center">
+      <a-button type="primary" ghost :loading="!!taskId" @click="createTask">
+        生成图片
+      </a-button>
+      <a-button
+        v-if="resultImageUrl"
+        type="primary"
+        :loading="loading"
+        @click="handleUpload"
+      >
+        应用结果
+      </a-button>
     </a-flex>
   </ModalArea>
 </template>

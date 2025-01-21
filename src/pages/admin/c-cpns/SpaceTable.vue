@@ -85,10 +85,10 @@ const { pagination, handleTableChange, handleDelete } = useAdminTable(
         </template>
         <template v-if="column.key === 'action'">
           <a-space wrap>
-            <a-button
-              type="link"
-              :href="`/add_space?id=${record.id}`"
-            >
+            <a-button type="link" :href="`/space_analyze?spaceId=${record.id}`">
+              分析
+            </a-button>
+            <a-button type="link" :href="`/add_space?id=${record.id}`">
               编辑
             </a-button>
             <a-button type="link" danger @click="handleDelete(record.id)"

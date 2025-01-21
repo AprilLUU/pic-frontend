@@ -3,14 +3,14 @@ import { onMounted, onUnmounted, reactive, ref, h } from "vue"
 import { ColorPicker } from "vue3-colorpicker"
 
 import "vue3-colorpicker/style.css"
-import { EditOutlined } from "@ant-design/icons-vue"
+import { BarChartOutlined, EditOutlined } from "@ant-design/icons-vue"
 import { storeToRefs } from "pinia"
 import PictureList from "@/components/PictureList.vue"
 import { FormArea } from "@/base-ui/form-area"
 import { pictureSearchFormList } from "./config"
 import { formatSize } from "@/utils"
 import { useSpaceStore } from "@/stores"
-import BatchEditPictureModal from "@/components/BatchEditPictureModal.vue"
+import BatchEditPictureModal from "@/pages/space/c-cpns/BatchEditPictureModal.vue"
 import ShareModal from "@/components/ShareModal.vue"
 import { FRONTEND_BASE_URL } from "@/config"
 
@@ -153,9 +153,19 @@ const onShare = (picture: API.PictureVO, e: Event) => {
         <a-button type="primary" :href="`/add_picture?spaceId=${id}`">
           创建图片
         </a-button>
-        <a-button :icon="h(EditOutlined)" @click="handleBatchEdit">
-          批量编辑</a-button
+        <a-button
+          type="primary"
+          ghost
+          :icon="h(BarChartOutlined)"
+          :href="`/space_analyze?spaceId=${id}`"
+          target="_blank"
         >
+          空间分析
+        </a-button>
+
+        <a-button :icon="h(EditOutlined)" @click="handleBatchEdit">
+          批量编辑
+        </a-button>
         <a-tooltip
           :title="`占用空间 ${formatSize(space.totalSize)} / ${formatSize(space.maxSize)}`"
         >

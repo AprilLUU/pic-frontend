@@ -32,9 +32,9 @@ const handleSubmit = async (values: any) => {
 
 <template>
   <ModalArea ref="modalRef" title="批量编辑图片">
-    <a-typography-paragraph type="secondary"
-      >* 只对当前页面的图片生效</a-typography-paragraph
-    >
+    <a-typography-paragraph type="secondary">
+      * 只对当前页面的图片生效
+    </a-typography-paragraph>
     <FormArea
       :formData="formData"
       :formList="batchEditPictureFormList"

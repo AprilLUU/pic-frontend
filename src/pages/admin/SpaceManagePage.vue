@@ -33,7 +33,13 @@ const handleDelete = (id: string) => {
     <a-flex justify="space-between">
       <h2>空间管理</h2>
       <a-space>
-        <a-button type="primary" href="/add_space">创建空间</a-button>
+        <a-button type="primary" href="/add_space"> 创建空间 </a-button>
+        <a-button type="primary" ghost href="/space_analyze?queryPublic=1">
+          分析公共图库
+        </a-button>
+        <a-button type="primary" ghost href="/space_analyze?queryAll=1">
+          分析全空间
+        </a-button>
       </a-space>
     </a-flex>
     <div style="margin-bottom: 16px"></div>

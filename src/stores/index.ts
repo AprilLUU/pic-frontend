@@ -4,6 +4,7 @@ import { useAdminStore } from "./admin"
 import { usePictureStore } from "./picture"
 import { useUserStore } from "./user"
 import { useSpaceStore } from "./space"
+import { useAnalyzeStore } from "./analyze"
 
 export {
   useHomeStore,
@@ -11,5 +12,6 @@ export {
   useAdminStore,
   usePictureStore,
   useUserStore,
-  useSpaceStore
+  useSpaceStore,
+  useAnalyzeStore
 }

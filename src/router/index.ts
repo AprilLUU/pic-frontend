@@ -102,6 +102,14 @@ const router = createRouter({
       }
     },
     {
+      path: "/space_analyze",
+      name: "空间分析",
+      component: () => import("@/pages/analyze/SpaceAnalyzePage.vue"),
+      meta: {
+        access: ACCESS_ENUM.USER
+      }
+    },
+    {
       path: "/noAuth",
       name: "无权限",
       component: () => import("@/pages/noAuth/NoAuthPage.vue")

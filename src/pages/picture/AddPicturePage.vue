@@ -8,8 +8,9 @@ import UrlUpload from "@/pages/picture/c-cpns//UrlUpload.vue"
 import { FormArea } from "@/base-ui/form-area"
 import { pictureEditFormList } from "./config"
 import { usePictureStore } from "@/stores"
-import { EditOutlined } from "@ant-design/icons-vue"
+import { EditOutlined, FullscreenOutlined } from "@ant-design/icons-vue"
 import ImageCropper from "./c-cpns/ImageCropper.vue"
+import ImageOutPainting from "./c-cpns/ImageOutPainting.vue"
 
 const pictureStore = usePictureStore()
 const { picture } = storeToRefs(pictureStore)
@@ -30,21 +31,25 @@ const handleUpdateFormData = (field: string, value: string) => {
   pictureForm[field as keyof API.PictureEditRequest] = value as any
 }
 
-const imageCropperRef = ref()
-
 const handleSubmit = async (values: any) => {
   pictureStore.editPiture(values, spaceId.value as string, editName)
 }
 
+const imageCropperRef = ref()
+const imageOutPaintingRef = ref()
+
 const handleEditPicture = () => {
   imageCropperRef.value?.openModal()
+}
+const handleImagePainting = () => {
+  imageOutPaintingRef.value?.openModal()
 }
 
 const onSuccess = (newPicture: API.PictureVO) => {
   picture.value = newPicture
   pictureForm.name = newPicture.name
 }
-const onCropSuccess = (newPicture: API.PictureVO) => {
+const onSuccessWithNoName = (newPicture: API.PictureVO) => {
   picture.value = newPicture
 }
 
@@ -95,15 +100,31 @@ onUnmounted(() => (picture.value = undefined))
       </a-tab-pane>
     </a-tabs>
     <div v-if="picture && spaceId" class="edit-bar">
-      <a-button :icon="h(EditOutlined)" @click="handleEditPicture"
-        >编辑图片</a-button
-      >
+      <a-space size="middle">
+        <a-button :icon="h(EditOutlined)" @click="handleEditPicture">
+          编辑图片
+        </a-button>
+        <a-button
+          type="primary"
+          ghost
+          :icon="h(FullscreenOutlined)"
+          @click="handleImagePainting"
+        >
+          AI 扩图
+        </a-button>
+      </a-space>
       <ImageCropper
         ref="imageCropperRef"
         :imageUrl="picture?.url"
         :picture="picture"
         :spaceId="spaceId"
-        :onSuccess="onCropSuccess"
+        :onSuccess="onSuccessWithNoName"
+      />
+      <ImageOutPainting
+        ref="imageOutPaintingRef"
+        :picture="picture"
+        :spaceId="spaceId"
+        :onSuccess="onSuccessWithNoName"
       />
     </div>
     <FormArea

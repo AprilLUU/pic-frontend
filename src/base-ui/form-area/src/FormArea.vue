@@ -92,7 +92,7 @@ const handleResetClick = () => {
               "
             />
           </template>
-          <template v-else-if="item.type === 'textarea'">
+          <template v-if="item.type === 'textarea'">
             <a-textarea
               :value="formData[item.field!]"
               :placeholder="item.placeholder"
@@ -104,7 +104,7 @@ const handleResetClick = () => {
               "
             />
           </template>
-          <template v-else-if="item.type === 'auto-complete'">
+          <template v-if="item.type === 'auto-complete'">
             <a-auto-complete
               :value="formData[item.field!]"
               :placeholder="item.placeholder"
@@ -116,7 +116,7 @@ const handleResetClick = () => {
               "
             />
           </template>
-          <template v-else-if="item.type === 'select'">
+          <template v-if="item.type === 'select'">
             <a-select
               :value="formData[item.field!]"
               :mode="item.mode"
@@ -129,7 +129,7 @@ const handleResetClick = () => {
               "
             />
           </template>
-          <template v-else-if="item.type === 'date-range-picker'">
+          <template v-if="item.type === 'date-range-picker'">
             <a-range-picker
               :style="item.styleObj"
               v-model:value="dateRange"
@@ -140,22 +140,24 @@ const handleResetClick = () => {
               @change="handleRangeChange"
             />
           </template>
-          <template v-else-if="item.type === 'button'">
+          <template v-if="item.type === 'button'">
             <a-button
               :style="item.styleObj"
               type="primary"
               html-type="submit"
               :loading="loading"
-              >{{ item.name }}</a-button
             >
+              {{ item.name }}
+            </a-button>
             <a-button
               v-if="isShowReset"
               class="reset-btn"
               :style="item.styleObj"
               html-type="reset"
               @click="handleResetClick"
-              >重置</a-button
             >
+              重置
+            </a-button>
           </template>
         </a-form-item>
       </template>
