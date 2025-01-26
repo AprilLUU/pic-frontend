@@ -1,5 +1,13 @@
 import { createRouter, createWebHistory } from "vue-router"
 import ACCESS_ENUM from "@/access/accessEnum"
+import { usePermission } from "@/hooks"
+import { useLoginUserStore } from "@/stores"
+
+const canVisitPage = (to: any, from: any, next: any) => {
+  const { canManageSpaceUser } = usePermission("space")
+  if (canManageSpaceUser.value) next()
+  else next("/noAuth")
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -44,6 +52,16 @@ const router = createRouter({
       }
     },
     {
+      path: "/spaceUserManage/:id",
+      name: "空间成员管理",
+      component: () => import("@/pages/admin/SpaceUserManagePage.vue"),
+      props: true,
+      meta: {
+        access: ACCESS_ENUM.USER
+      },
+      beforeEnter: canVisitPage
+    },
+    {
       path: "/add_picture",
       name: "创建图片",
       component: () => import("@/pages/picture/AddPicturePage.vue"),
@@ -80,8 +98,19 @@ const router = createRouter({
       path: "/add_space",
       name: "创建空间",
       component: () => import("@/pages/space/AddSpacePage.vue"),
-      meta: {
-        access: ACCESS_ENUM.USER
+      beforeEnter: (to, from, next) => {
+        const loginUserStore = useLoginUserStore()
+        if (to.query?.id) {
+          // 修改空间页面仅限管理员访问
+          if (loginUserStore.loginUser.userRole === ACCESS_ENUM.ADMIN) {
+            next()
+            return
+          } else {
+            next("/noAuth")
+            return
+          }
+        }
+        next()
       }
     },
     {
@@ -108,6 +137,9 @@ const router = createRouter({
       meta: {
         access: ACCESS_ENUM.USER
       }
+      // 空间分析页面 管理员访问时没有请求空间详情
+      // 为了兼容管理员进行空间分析 仅对空间详情页的按钮权限进行控制
+      // beforeEnter: canVisitPage
     },
     {
       path: "/noAuth",

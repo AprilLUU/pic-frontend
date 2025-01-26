@@ -1,4 +1,7 @@
 import type { FormList } from "@/base-ui/form-area"
+import { getOptions } from "@/constants"
+
+const { tagOptions, categoryOptions } = getOptions()
 
 export const taskFormList: FormList[] = [
   {
@@ -58,6 +61,7 @@ export const pictureEditFormList: FormList[] = [
     name: "category",
     field: "category",
     type: "auto-complete",
+    options: categoryOptions,
     placeholder: "请输入分类",
     allowClear: true
   },
@@ -66,6 +70,7 @@ export const pictureEditFormList: FormList[] = [
     name: "tags",
     field: "tags",
     type: "select",
+    options: tagOptions,
     placeholder: "请输入标签",
     allowClear: true,
     mode: "tags"

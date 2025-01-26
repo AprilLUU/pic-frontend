@@ -1,4 +1,5 @@
 import { computed } from "vue"
+import { useRouter } from "vue-router"
 
 const useAdminTable = (props: any, emit: any) => {
   // 分页参数
@@ -26,11 +27,15 @@ const useAdminTable = (props: any, emit: any) => {
     emit("change:review", data, status)
   }
 
+  const router = useRouter()
+  const handleBtnClick = (path: string) => router.push(path)
+
   return {
     pagination,
     handleTableChange,
     handleDelete,
-    handleReview
+    handleReview,
+    handleBtnClick
   }
 }
 

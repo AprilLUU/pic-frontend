@@ -14,7 +14,9 @@ interface Props {
   onReload?: any
   showOp?: boolean
   showMeta?: boolean
-  onShare?: any
+  onShare?: any,
+  canEdit?: boolean
+  canDelete?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -106,8 +108,8 @@ const handleDelete = async (picture: API.PictureVO, e: MouseEvent) => {
       <template v-if="showOp" #actions>
         <SearchOutlined @click="(e: MouseEvent) => handleSearch(picture, e)" />
         <ShareAltOutlined @click="(e: MouseEvent) => handleShare(picture, e)" />
-        <EditOutlined @click="(e: MouseEvent) => handleEdit(picture, e)" />
-        <DeleteOutlined @click="(e: MouseEvent) => handleDelete(picture, e)" />
+        <EditOutlined v-if="canEdit" @click="(e: MouseEvent) => handleEdit(picture, e)" />
+        <DeleteOutlined v-if="canDelete" @click="(e: MouseEvent) => handleDelete(picture, e)" />
       </template>
     </a-card>
   </div>

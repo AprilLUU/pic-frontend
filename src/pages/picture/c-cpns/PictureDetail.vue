@@ -5,8 +5,8 @@ import {
   DeleteOutlined,
   DownloadOutlined
 } from "@ant-design/icons-vue"
-import { computed } from "vue"
-import { useRouter } from "vue-router"
+import { computed, type ComputedRef } from "vue"
+import { useRoute, useRouter } from "vue-router"
 
 import { useLoginUserStore } from "@/stores"
 import { downloadImage, formatSize, toHexColor } from "@/utils"
@@ -15,6 +15,7 @@ import checkAccess from "@/access/checkAccess"
 import ACCESS_ENUM from "@/access/accessEnum"
 import { storeToRefs } from "pinia"
 import usePictureOperation from "@/hooks/usePictureOperation"
+import { usePermission } from "@/hooks"
 
 interface Props {
   picture: API.PictureVO
@@ -26,9 +27,16 @@ const emit = defineEmits(["fetchNewPicture"])
 
 const loginUserStore = useLoginUserStore()
 const { loginUser } = storeToRefs(loginUserStore)
+
+// 权限
 // 是否具有编辑权限
 // loginUser变化时重新计算
-const canEdit = computed(() => {
+const route = useRoute()
+let canEdit: ComputedRef<boolean>
+let canDelete: ComputedRef<boolean>
+const { canDeletePicture, canEditPicture } = usePermission("picture")
+// 公共图库的图片详情页 控制权限
+const canEditCommonPicture = computed(() => {
   const loginUser = loginUserStore.loginUser
   // 未登录不可编辑
   if (!loginUser.id) return false
@@ -36,6 +44,14 @@ const canEdit = computed(() => {
   // const user = props.picture.user || {}
   return loginUser.id === props.picture.userId || loginUser.userRole === "admin"
 })
+// 空间的图片详情页 控制权限
+if (route.query?.spaceId) {
+  canEdit = canEditPicture
+  canDelete = canDeletePicture
+} else {
+  canEdit = canEditCommonPicture
+  canDelete = canEditCommonPicture
+}
 
 const router = useRouter()
 // 编辑
@@ -135,7 +151,7 @@ const handleReviewAndEmit = (picture: API.PictureVO, reviewStatus: number) => {
             <ShareAltOutlined />
           </template>
         </a-button>
-        <template v-if="checkAccess(loginUser, ACCESS_ENUM.ADMIN)">
+        <template v-if="checkAccess(loginUser, ACCESS_ENUM.ADMIN) && !route.query?.spaceId">
           <a-button
             @click="
               () => handleReviewAndEmit(picture, PIC_REVIEW_STATUS_ENUM.PASS)
@@ -159,7 +175,7 @@ const handleReviewAndEmit = (picture: API.PictureVO, reviewStatus: number) => {
           </template>
         </a-button>
         <a-button
-          v-if="canEdit"
+          v-if="canDelete"
           danger
           @click="() => handleDeleteAndJump(picture.id!)"
         >

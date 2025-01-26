@@ -1,6 +1,7 @@
 import type { FormList } from "@/base-ui/form-area"
-import { categoryOptions, tagOptions } from "@/constants"
+import { getOptions } from "@/constants"
 
+const { tagOptions, categoryOptions } = getOptions()
 // 分类、标签和命名规则表单配置
 export const batchEditPictureFormList: FormList[] = [
   {

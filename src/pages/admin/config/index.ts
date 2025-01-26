@@ -1,6 +1,12 @@
 import { type FormList } from "@/base-ui/form-area"
-import { PIC_REVIEW_STATUS_OPTIONS } from "@/constants/picture"
-import { SPACE_LEVEL_OPTIONS } from "@/constants/space"
+import {
+  getOptions,
+  PIC_REVIEW_STATUS_OPTIONS,
+  SPACE_LEVEL_OPTIONS,
+  SPACE_TYPE_OPTIONS
+} from "@/constants"
+
+const { tagOptions, categoryOptions } = getOptions()
 
 const pictureFormList: FormList[] = [
   {
@@ -15,8 +21,10 @@ const pictureFormList: FormList[] = [
     label: "分类",
     name: "category",
     field: "category",
-    type: "input",
+    type: "auto-complete",
+    options: categoryOptions,
     placeholder: "请输入类型",
+    styleObj: { minWidth: "180px" },
     allowClear: true
   },
   {
@@ -24,6 +32,7 @@ const pictureFormList: FormList[] = [
     name: "tags",
     field: "tags",
     type: "select",
+    options: tagOptions,
     placeholder: "请输入标签",
     allowClear: true,
     styleObj: { minWidth: "180px" },
@@ -88,6 +97,16 @@ const spaceFormList: FormList[] = [
     options: SPACE_LEVEL_OPTIONS
   },
   {
+    label: "空间类别",
+    name: "spaceType",
+    field: "spaceType",
+    type: "select",
+    placeholder: "请输入空间类别",
+    allowClear: true,
+    styleObj: { minWidth: "180px" },
+    options: SPACE_TYPE_OPTIONS
+  },
+  {
     label: "用户 id",
     name: "userId",
     field: "userId",
@@ -101,4 +120,19 @@ const spaceFormList: FormList[] = [
   }
 ]
 
-export { pictureFormList, userFormList, spaceFormList }
+const spaceUserFormList: FormList[] = [
+  {
+    label: "用户 id",
+    name: "userId",
+    field: "userId",
+    type: "input",
+    placeholder: "请输入用户 id",
+    allowClear: true
+  },
+  {
+    name: "添加用户",
+    type: "button"
+  }
+]
+
+export { pictureFormList, userFormList, spaceFormList, spaceUserFormList }

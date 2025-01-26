@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, reactive, ref, h } from "vue"
+import { onMounted, onUnmounted, reactive, ref, h, watch } from "vue"
+import { useRouter } from "vue-router"
 import { ColorPicker } from "vue3-colorpicker"
-
 import "vue3-colorpicker/style.css"
-import { BarChartOutlined, EditOutlined } from "@ant-design/icons-vue"
+import {
+  BarChartOutlined,
+  EditOutlined,
+  TeamOutlined
+} from "@ant-design/icons-vue"
 import { storeToRefs } from "pinia"
 import PictureList from "@/components/PictureList.vue"
 import { FormArea } from "@/base-ui/form-area"
@@ -13,6 +17,8 @@ import { useSpaceStore } from "@/stores"
 import BatchEditPictureModal from "@/pages/space/c-cpns/BatchEditPictureModal.vue"
 import ShareModal from "@/components/ShareModal.vue"
 import { FRONTEND_BASE_URL } from "@/config"
+import { SPACE_TYPE_ENUM, SPACE_TYPE_MAP } from "@/constants"
+import { usePermission } from "@/hooks"
 
 const props = defineProps<{
   id: string
@@ -37,7 +43,9 @@ const fetchData = async () => {
     ...searchParams
   }
 
-  if (!space.value.id) {
+  // spaceId不存在，请求空间信息
+  // spaceId与props.id不一致，空间不一致，重新请求空间信息
+  if (!space.value.id || space.value.id !== props.id) {
     await spaceStore.getSpaceVoById(props.id)
     // console.log(space.value)
     // console.log(typeof space.value.totalSize)
@@ -55,13 +63,15 @@ const fetchData = async () => {
 }
 // 页面加载时请求一次
 onMounted(() => fetchData())
-onUnmounted(() => {
-  space.value = {}
-  dataList.value = []
-  total.value = 0
-})
+// onUnmounted(() => {
+//   space.value = {}
+//   dataList.value = []
+//   total.value = 0
+// })
 // 分页参数
 const onPageChange = () => fetchData()
+// 监听空间id（私人或者团队）变化 重新请求数据
+watch(() => props.id, fetchData)
 
 // 搜索条件
 const searchParams = reactive<API.PictureQueryRequest>({
@@ -127,6 +137,17 @@ const onShare = (picture: API.PictureVO, e: Event) => {
   shareLink.value = `${FRONTEND_BASE_URL}/picture/${picture.id}`
   shareModalRef.value?.openModal()
 }
+
+// 权限
+const {
+  canDeletePicture,
+  canEditPicture,
+  canManageSpaceUser,
+  canUploadPicture
+} = usePermission("space")
+
+const router = useRouter()
+const handleBtnClick = (path: string) => router.push(path)
 </script>
 
 <template>
@@ -143,27 +164,49 @@ const onShare = (picture: API.PictureVO, e: Event) => {
       @reset:formData="handleResetFormData"
     />
     <!-- 按颜色搜索 -->
-    <a-form-item label="按颜色搜索" style="margin-top: 16px">
+    <a-form-item label="按颜色搜索" style="margin-top: 10px">
       <color-picker format="hex" @pureColorChange="onColorChange" />
     </a-form-item>
     <!-- 空间信息 -->
     <a-flex justify="space-between">
-      <h2>{{ space.spaceName }}（私有空间）</h2>
+      <h2>
+        {{
+          `${space.spaceName}(${SPACE_TYPE_MAP[space?.spaceType ?? SPACE_TYPE_ENUM.PRIVATE]})`
+        }}
+      </h2>
       <a-space size="middle">
-        <a-button type="primary" :href="`/add_picture?spaceId=${id}`">
+        <!-- 改为编程式路由导航 避免刷新页面丢失store状态 -->
+        <!-- :href="`/add_picture?spaceId=${id}`" -->
+        <a-button
+          v-if="canUploadPicture"
+          type="primary"
+          @click="handleBtnClick(`/add_picture?spaceId=${id}`)"
+        >
           创建图片
         </a-button>
         <a-button
+          v-if="space.spaceType === SPACE_TYPE_ENUM.TEAM && canManageSpaceUser"
+          type="primary"
+          ghost
+          :icon="h(TeamOutlined)"
+          @click="handleBtnClick(`/spaceUserManage/${id}`)"
+        >
+          成员管理
+        </a-button>
+        <a-button
+          v-if="canManageSpaceUser"
           type="primary"
           ghost
           :icon="h(BarChartOutlined)"
-          :href="`/space_analyze?spaceId=${id}`"
-          target="_blank"
+          @click="handleBtnClick(`/space_analyze?spaceId=${id}`)"
         >
           空间分析
         </a-button>
-
-        <a-button :icon="h(EditOutlined)" @click="handleBatchEdit">
+        <a-button
+          v-if="canEditPicture"
+          :icon="h(EditOutlined)"
+          @click="handleBatchEdit"
+        >
           批量编辑
         </a-button>
         <a-tooltip
@@ -180,6 +223,8 @@ const onShare = (picture: API.PictureVO, e: Event) => {
       :showOp="true"
       :onReload="fetchData"
       :onShare="onShare"
+      :canEdit="canEditPicture"
+      :canDelete="canDeletePicture"
     />
     <a-pagination
       style="text-align: right"

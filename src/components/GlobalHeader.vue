@@ -71,6 +71,7 @@ const onMenuClick = ({ key }: { key: string }) => {
 // 用户注销
 const handleLogout = async () => {
   loginUserStore.logout()
+  router.push("/")
 }
 </script>
 

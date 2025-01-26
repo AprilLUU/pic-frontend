@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { BASE_URL } from "@/config"
 import PictureItem from "./PictureItem.vue"
 
 interface Props {
@@ -9,12 +8,16 @@ interface Props {
   showMeta?: boolean
   onReload?: any
   onShare?: any
+  canEdit?: boolean
+  canDelete?: boolean
 }
 withDefaults(defineProps<Props>(), {
   dataList: () => [],
   loading: false,
   showMeta: true,
-  showOp: false
+  showOp: false,
+  canEdit: false,
+  canDelete: false
 })
 </script>
 
@@ -34,6 +37,8 @@ withDefaults(defineProps<Props>(), {
             :showMeta="showMeta"
             :onReload="onReload"
             :onShare="onShare"
+            :canEdit="canEdit"
+            :canDelete="canDelete"
           />
         </a-list-item>
       </template>

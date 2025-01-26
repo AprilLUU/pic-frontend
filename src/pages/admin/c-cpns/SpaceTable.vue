@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SPACE_LEVEL_MAP } from "@/constants/space"
+import { SPACE_LEVEL_MAP, SPACE_TYPE_MAP } from "@/constants/space"
 import { formatSize, formatTime } from "@/utils"
 import { useAdminTable } from "@/hooks"
 
@@ -27,6 +27,10 @@ const columns = [
     dataIndex: "spaceLevel"
   },
   {
+    title: "空间类别",
+    dataIndex: "spaceType"
+  },
+  {
     title: "使用情况",
     dataIndex: "spaceUseInfo"
   },
@@ -49,10 +53,8 @@ const columns = [
   }
 ]
 
-const { pagination, handleTableChange, handleDelete } = useAdminTable(
-  props,
-  emit
-)
+const { pagination, handleTableChange, handleDelete, handleBtnClick } =
+  useAdminTable(props, emit)
 </script>
 
 <template>
@@ -68,6 +70,10 @@ const { pagination, handleTableChange, handleDelete } = useAdminTable(
         <!-- 空间级别 -->
         <template v-if="column.dataIndex === 'spaceLevel'">
           <a-tag>{{ SPACE_LEVEL_MAP[record.spaceLevel] }}</a-tag>
+        </template>
+        <!-- 空间类别 -->
+        <template v-if="column.dataIndex === 'spaceType'">
+          <a-tag>{{ SPACE_TYPE_MAP[record.spaceType] }}</a-tag>
         </template>
         <!-- 使用情况 -->
         <template v-if="column.dataIndex === 'spaceUseInfo'">
@@ -85,15 +91,21 @@ const { pagination, handleTableChange, handleDelete } = useAdminTable(
         </template>
         <template v-if="column.key === 'action'">
           <a-space wrap>
-            <a-button type="link" :href="`/space_analyze?spaceId=${record.id}`">
+            <a-button
+              type="link"
+              @click="handleBtnClick(`/space_analyze?spaceId=${record.id}`)"
+            >
               分析
             </a-button>
-            <a-button type="link" :href="`/add_space?id=${record.id}`">
+            <a-button
+              type="link"
+              @click="handleBtnClick(`/add_space?id=${record.id}`)"
+            >
               编辑
             </a-button>
-            <a-button type="link" danger @click="handleDelete(record.id)"
-              >删除</a-button
-            >
+            <a-button type="link" danger @click="handleDelete(record.id)">
+              删除
+            </a-button>
           </a-space>
         </template>
       </template>

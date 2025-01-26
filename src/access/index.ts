@@ -15,10 +15,12 @@ router.beforeEach(async (to, from, next) => {
     // 用户登录成功 获取用户空间信息
     if (loginUser.id) {
       await loginUserStore.fetchLoginUserSpace()
+      await loginUserStore.fetchTeamSpaceList()
     }
   }
 
-  const space = loginUserStore.space
+  const privateSpace = loginUserStore.privateSpace
+  const teamSpaceListId = loginUserStore.teamSpaceList.map((item) => item.spaceId)
   // 获取用户访问页面的spaceId
   let spaceId = ""
   if (to.path.includes("space") && !to.path.includes("Manage")) {
@@ -50,7 +52,8 @@ router.beforeEach(async (to, from, next) => {
     if (spaceId) {
       // console.log(space)
       // 校验用户空间id与跳转id是否一致
-      if (space?.id !== spaceId) {
+      // 如果用户空间id与跳转id不一致或者团队空间id中没有此id，那么跳转到无权限页面
+      if (privateSpace?.id !== spaceId && !teamSpaceListId.includes(spaceId)) {
         next("/noAuth")
         return
       }

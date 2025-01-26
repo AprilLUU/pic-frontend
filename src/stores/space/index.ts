@@ -13,6 +13,7 @@ import {
 } from "@/api"
 import { useLoginUserStore } from "../loginUser"
 import { editPictureByBatchUsingPost } from "@/api"
+import { SPACE_TYPE_ENUM } from "@/constants"
 
 export const useSpaceStore = defineStore("space", () => {
   const loginUserStore = useLoginUserStore()
@@ -76,24 +77,26 @@ export const useSpaceStore = defineStore("space", () => {
     }
   }
 
-  const addOrUpdateSpace = async (values: any) => {
+  const addOrUpdateSpace = async (params: any) => {
     const spaceId = space.value?.id
     let res
     if (spaceId) {
       res = (await updateSpaceUsingPost({
         id: spaceId,
-        ...values
+        ...params
       })) as any
     } else {
       res = (await addSpaceUsingPost({
-        ...values
+        ...params
       })) as any
     }
 
     if (res.code === 0 && res.data) {
       message.success("操作成功")
       // 如果是创建空间 设置全局空间状态
-      if (!spaceId) await loginUserStore.fetchLoginUserSpace()
+      if (!spaceId && params.spaceType === SPACE_TYPE_ENUM.PRIVATE) {
+        await loginUserStore.fetchLoginUserSpace()
+      }
       // 跳转到空间详情页
       const path = `/space/${spaceId ?? res.data}`
       router.push({

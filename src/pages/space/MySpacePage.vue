@@ -7,7 +7,7 @@ import { storeToRefs } from "pinia"
 
 const router = useRouter()
 const loginUserStore = useLoginUserStore()
-const { loginUser, space } = storeToRefs(loginUserStore)
+const { loginUser, privateSpace } = storeToRefs(loginUserStore)
 
 // 检查用户是否有个人空间
 const checkUserSpace = async () => {
@@ -16,8 +16,8 @@ const checkUserSpace = async () => {
     return
   }
   // 获取用户空间信息
-  if (space.value.id) {
-    router.replace(`/space/${space.value.id}`)
+  if (privateSpace.value.id) {
+    router.replace(`/space/${privateSpace.value.id}`)
   } else {
     router.replace("/add_space")
     message.warn("请先创建空间")

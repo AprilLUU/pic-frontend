@@ -71,6 +71,12 @@ declare namespace API {
     message?: string
   }
 
+  type BaseResponseListSpaceUserVO_ = {
+    code?: number
+    data?: SpaceUserVO[]
+    message?: string
+  }
+
   type BaseResponseLoginUserVO_ = {
     code?: number
     data?: LoginUserVO
@@ -140,6 +146,12 @@ declare namespace API {
   type BaseResponseSpaceUsageAnalyzeResponse_ = {
     code?: number
     data?: SpaceUsageAnalyzeResponse
+    message?: string
+  }
+
+  type BaseResponseSpaceUser_ = {
+    code?: number
+    data?: SpaceUser
     message?: string
   }
 
@@ -423,6 +435,7 @@ declare namespace API {
     id?: string
     introduction?: string
     name?: string
+    permissionList?: string[]
     picColor?: string
     picFormat?: string
     picHeight?: number
@@ -456,6 +469,7 @@ declare namespace API {
     maxSize?: number
     spaceLevel?: number
     spaceName?: string
+    spaceType?: number
     totalCount?: number
     totalSize?: number
     updateTime?: string
@@ -465,6 +479,7 @@ declare namespace API {
   type SpaceAddRequest = {
     spaceLevel?: number
     spaceName?: string
+    spaceType?: number
   }
 
   type SpaceCategoryAnalyzeRequest = {
@@ -499,6 +514,7 @@ declare namespace API {
     sortOrder?: string
     spaceLevel?: number
     spaceName?: string
+    spaceType?: number
     userId?: string
   }
 
@@ -551,6 +567,21 @@ declare namespace API {
     usedSize?: number
   }
 
+  type SpaceUser = {
+    createTime?: string
+    id?: string
+    spaceId?: string
+    spaceRole?: string
+    updateTime?: string
+    userId?: string
+  }
+
+  type SpaceUserAddRequest = {
+    spaceId?: string
+    spaceRole?: string
+    userId?: string
+  }
+
   type SpaceUserAnalyzeRequest = {
     queryAll?: boolean
     queryPublic?: boolean
@@ -564,14 +595,39 @@ declare namespace API {
     period?: string
   }
 
+  type SpaceUserEditRequest = {
+    id?: string
+    spaceRole?: string
+  }
+
+  type SpaceUserQueryRequest = {
+    id?: string
+    spaceId?: string
+    spaceRole?: string
+    userId?: string
+  }
+
+  type SpaceUserVO = {
+    createTime?: string
+    id?: string
+    space?: SpaceVO
+    spaceId?: string
+    spaceRole?: string
+    updateTime?: string
+    user?: UserVO
+    userId?: string
+  }
+
   type SpaceVO = {
     createTime?: string
     editTime?: string
     id?: string
     maxCount?: number
     maxSize?: number
+    permissionList?: string[]
     spaceLevel?: number
     spaceName?: string
+    spaceType?: number
     totalCount?: number
     totalSize?: number
     updateTime?: string

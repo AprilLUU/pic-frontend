@@ -1,6 +1,8 @@
 import dayjs from "dayjs"
 import type { FormList } from "@/base-ui/form-area"
-import { tagOptions, categoryOptions, SPACE_LEVEL_OPTIONS } from "@/constants"
+import { getOptions, SPACE_LEVEL_OPTIONS } from "@/constants"
+
+const { tagOptions, categoryOptions } = getOptions()
 
 const spaceEditFormList: FormList[] = [
   {

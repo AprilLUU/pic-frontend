@@ -59,7 +59,7 @@ const handleSearch = (payload?: any) => {
     <!-- 分类 + 标签 -->
     <HomeCategoryTagBar @search="handleSearch" />
     <!-- 图片列表 -->
-    <PictureList :dataList="dataList" :loading="loading" />
+    <PictureList :dataList="dataList" :loading="loading" :showOp="true" />
     <a-pagination
       style="text-align: right"
       v-model:current="searchParams.current"

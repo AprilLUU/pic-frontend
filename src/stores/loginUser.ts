@@ -5,12 +5,14 @@ import { useRouter } from "vue-router"
 import {
   getLoginUserUsingGet,
   listSpaceVoByPageUsingPost,
-  userLogoutUsingPost
+  userLogoutUsingPost,
+  listMyTeamSpaceUsingPost
 } from "@/api"
 
 export const useLoginUserStore = defineStore("loginUser", () => {
   const loginUser = ref<API.LoginUserVO>({})
-  const space = ref<API.SpaceVO>({})
+  const privateSpace = ref<API.SpaceVO>({})
+  const teamSpaceList = ref<API.SpaceUserVO[]>([])
   const router = useRouter()
 
   const fetchLoginUser = async () => {
@@ -47,24 +49,31 @@ export const useLoginUserStore = defineStore("loginUser", () => {
     })) as API.BaseResponsePageSpaceVO_
 
     if (res.code === 0 && res.data) {
+      // console.log(res)
       if (res.data?.records!.length > 0) {
-        space.value = res.data.records![0]
+        privateSpace.value = res.data.records![0]
       }
     }
   }
 
-  const setSpace = (newSpace: API.SpaceVO) => {
-    space.value = newSpace
-    // console.log(newSpace, space.value)
+  // 加载团队空间列表
+  const fetchTeamSpaceList = async () => {
+    const res = (await listMyTeamSpaceUsingPost()) as any
+    if (res.code === 0 && res.data) {
+      teamSpaceList.value = res.data
+    } else {
+      message.error("加载我的团队空间失败，" + res.message)
+    }
   }
 
   return {
     loginUser,
+    privateSpace,
+    teamSpaceList,
     fetchLoginUser,
     setLoginUser,
     logout,
     fetchLoginUserSpace,
-    space,
-    setSpace
+    fetchTeamSpaceList
   }
 })
