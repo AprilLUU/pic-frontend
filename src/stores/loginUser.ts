@@ -27,7 +27,8 @@ export const useLoginUserStore = defineStore("loginUser", () => {
     if (res.code === 0) {
       // 退出登录 清空store状态
       loginUser.value = {}
-      space.value = {}
+      privateSpace.value = {}
+      teamSpaceList.value = []
       message.success("退出登录成功")
       router.push("/user/login")
     } else {
