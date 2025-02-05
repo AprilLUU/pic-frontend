@@ -5,7 +5,6 @@ import { ref } from "vue"
 import {
   createPictureOutPaintingTaskUsingPost,
   editPictureUsingPost,
-  getPictureByIdUsingGet,
   getPictureOutPaintingTaskUsingGet,
   getPictureVoByIdUsingGet,
   searchPictureByPictureUsingPost,
@@ -17,7 +16,7 @@ import {
 export const usePictureStore = defineStore("picture", () => {
   const router = useRouter()
   // 创建/修改图片页
-  const picture = ref<API.PictureVO | API.Picture>()
+  const picture = ref<API.PictureVO>({})
   // 图片详情页
   const detailPicture = ref<API.PictureVO>({})
   // 图片搜索页
@@ -26,7 +25,6 @@ export const usePictureStore = defineStore("picture", () => {
   // AI扩图弹窗
   // 任务id
   const taskId = ref<string>()
-
 
   const uploadPitureByFile = async (
     params: API.PictureUploadRequest,
@@ -80,9 +78,9 @@ export const usePictureStore = defineStore("picture", () => {
   }
 
   const getPictureById = async (id: string) => {
-    const res = (await getPictureByIdUsingGet({
+    const res = (await getPictureVoByIdUsingGet({
       id
-    })) as API.BaseResponsePicture_
+    })) as API.BaseResponsePictureVO_
     if (res.code === 0 && res.data) {
       const data = res.data
       picture.value = data
@@ -167,7 +165,7 @@ export const usePictureStore = defineStore("picture", () => {
 
   // 清空store状态
   const clearState = () => {
-    picture.value = undefined
+    picture.value = {}
     detailPicture.value = {}
     searchPicture.value = {}
   }

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from "vue"
+import { computed, onUnmounted, ref } from "vue"
 import { storeToRefs } from "pinia"
 import ModalArea from "@/base-ui/modal-area/src/ModalArea.vue"
 import { usePictureStore } from "@/stores"
 import { message } from "ant-design-vue"
 
 interface Props {
-  picture?: API.PictureVO | API.Picture
+  picture?: API.PictureVO
   spaceId?: string
   onSuccess?: (newPicture: API.PictureVO) => void
 }

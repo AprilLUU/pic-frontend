@@ -6,7 +6,7 @@ import { useRouter } from "vue-router"
 import { useLoginUserStore, usePictureStore } from "@/stores"
 
 interface Props {
-  picture?: API.PictureVO | API.Picture
+  picture?: API.PictureVO
   spaceId?: string
   onSuccess?: (newPicture: API.PictureVO) => void
 }

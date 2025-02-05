@@ -63,12 +63,12 @@ const getOldPicture = async () => {
     pictureForm.name = data.name
     pictureForm.introduction = data.introduction
     pictureForm.category = data.category
-    pictureForm.tags = JSON.parse(data.tags ?? "[]")
+    pictureForm.tags = data.tags
   }
 }
 
 onMounted(() => getOldPicture())
-onUnmounted(() => (picture.value = undefined))
+onUnmounted(() => (picture.value = {}))
 </script>
 
 <template>

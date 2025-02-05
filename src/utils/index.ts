@@ -1,5 +1,6 @@
 import dayjs from "dayjs"
 import { saveAs } from "file-saver"
+export * from "./websocket"
 
 /**
  * 格式化文件大小
