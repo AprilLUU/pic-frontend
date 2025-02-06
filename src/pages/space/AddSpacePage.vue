@@ -24,8 +24,6 @@ if (route.query?.id) {
   route.meta.access = ACCESS_ENUM.USER
 }
 
-console.log(route)
-
 // 空间类别
 const spaceType = computed(() => {
   if (route.query?.type) {

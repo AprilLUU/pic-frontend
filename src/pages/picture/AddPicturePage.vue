@@ -5,6 +5,7 @@ import { computed, onMounted, onUnmounted, reactive, ref } from "vue"
 import { useRoute } from "vue-router"
 import PictureUpload from "@/pages/picture/c-cpns/PictureUpload.vue"
 import UrlUpload from "@/pages/picture/c-cpns//UrlUpload.vue"
+import ImageGenerate from "./c-cpns/ImageGenerate.vue"
 import { FormArea } from "@/base-ui/form-area"
 import { pictureEditFormList } from "./config"
 import { usePictureStore } from "@/stores"
@@ -16,7 +17,7 @@ const pictureStore = usePictureStore()
 const { picture } = storeToRefs(pictureStore)
 const pictureForm = reactive<API.PictureEditRequest>({})
 
-const uploadType = ref<"file" | "url">("file")
+const uploadType = ref<"file" | "url" | "generate">("file")
 
 const route = useRoute()
 // 空间 id
@@ -68,7 +69,7 @@ const getOldPicture = async () => {
 }
 
 onMounted(() => getOldPicture())
-onUnmounted(() => (picture.value = {}))
+onUnmounted(() => (picture.value = undefined))
 </script>
 
 <template>
@@ -93,6 +94,13 @@ onUnmounted(() => (picture.value = {}))
       </a-tab-pane>
       <a-tab-pane key="url" tab="URL 上传" force-render>
         <UrlUpload
+          :picture="picture"
+          :onSuccess="onSuccess"
+          :spaceId="spaceId"
+        />
+      </a-tab-pane>
+      <a-tab-pane key="generate" tab="AI 生成" force-render>
+        <ImageGenerate
           :picture="picture"
           :onSuccess="onSuccess"
           :spaceId="spaceId"

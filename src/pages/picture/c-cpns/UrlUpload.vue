@@ -41,7 +41,7 @@ const handleUpload = async () => {
 
 <template>
   <div id="urlUpload">
-    <a-input-group compact style="margin-bottom: 16px">
+    <a-input-group v-if="!picture" compact style="margin-bottom: 16px">
       <a-input
         v-model:value="fileUrl"
         style="width: calc(100% - 120px)"
@@ -52,8 +52,9 @@ const handleUpload = async () => {
         :loading="loading"
         @click="handleUpload"
         style="width: 120px"
-        >提交</a-button
       >
+        提交
+      </a-button>
     </a-input-group>
     <img v-if="picture?.url" :src="picture?.url" alt="avatar" />
   </div>

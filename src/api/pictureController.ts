@@ -222,6 +222,42 @@ export async function listPictureTagCategoryUsingGet(options?: {
   )
 }
 
+/** createText2ImageTask POST /api/picture/text_to_image/create_task */
+export async function createText2ImageTaskUsingPost(
+  body: API.CreateGeneratePictureTaskRequest,
+  options?: { [key: string]: any }
+) {
+  return request<API.BaseResponseCreateText2ImageTaskResponse_>(
+    "/api/picture/text_to_image/create_task",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      data: body,
+      ...(options || {})
+    }
+  )
+}
+
+/** getText2ImageTask GET /api/picture/text_to_image/get_task */
+export async function getText2ImageTaskUsingGet(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.getText2ImageTaskUsingGETParams,
+  options?: { [key: string]: any }
+) {
+  return request<API.BaseResponseGetText2ImageTaskResponse_>(
+    "/api/picture/text_to_image/get_task",
+    {
+      method: "GET",
+      params: {
+        ...params
+      },
+      ...(options || {})
+    }
+  )
+}
+
 /** updatePicture POST /api/picture/update */
 export async function updatePictureUsingPost(
   body: API.PictureUpdateRequest,
