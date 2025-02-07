@@ -91,7 +91,7 @@ const handleUpload = async () => {
 </script>
 
 <template>
-  <div id="urlUpload">
+  <div id="imageGenerate">
     <a-input-group v-if="!picture" compact style="margin-bottom: 16px">
       <a-input
         v-model:value="prompt"
@@ -112,10 +112,10 @@ const handleUpload = async () => {
 </template>
 
 <style scoped>
-#urlUpload {
+#imageGenerate {
   margin-bottom: 16px;
 }
-#urlUpload img {
+#imageGenerate img {
   max-width: 100%;
   max-height: 480px;
   display: block;

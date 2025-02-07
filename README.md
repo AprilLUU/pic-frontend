@@ -1,8 +1,7 @@
-## TODO 瀑布流图片展示+虚拟滚动
+## 接入文生图 AI扩图大模型
 
-vue-waterfall-plugin-next+vue-virtual-scroller
-
-## TODO 接入图配文 文生图大模型
+- 创建AI任务，获取任务ID
+- 根据任务ID轮询获取结果
 
 ## number类型溢出问题
 
