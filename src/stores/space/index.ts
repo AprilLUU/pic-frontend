@@ -96,6 +96,8 @@ export const useSpaceStore = defineStore("space", () => {
       // 如果是创建空间 设置全局空间状态
       if (!spaceId && params.spaceType === SPACE_TYPE_ENUM.PRIVATE) {
         await loginUserStore.fetchLoginUserSpace()
+      } else {
+        await loginUserStore.fetchTeamSpaceList()
       }
       // 跳转到空间详情页
       const path = `/space/${spaceId ?? res.data}`

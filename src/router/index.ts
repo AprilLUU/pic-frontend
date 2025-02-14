@@ -111,6 +111,9 @@ const router = createRouter({
           }
         }
         next()
+      },
+      meta: {
+        access: ACCESS_ENUM.USER
       }
     },
     {
