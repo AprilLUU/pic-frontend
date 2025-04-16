@@ -11,7 +11,7 @@ interface Props {
   autoComplete?: string
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   formData: () => {},
   formList: () => [],
   formLayout: "inline",
@@ -28,6 +28,14 @@ const emit = defineEmits([
 // const searchParams = defineModel()
 
 const handleValueChange = (value: string, field: string) => {
+  props.formList.forEach(((item) => {
+    if (item.dependencies) {
+      if (item.dependencies.includes(field)) {
+        const effectVal = item.onChange?.(field, value)
+        emit("update:formData", item.field, effectVal)
+      }
+    }
+  }))
   emit("update:formData", field, value)
 }
 

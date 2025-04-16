@@ -19,6 +19,10 @@ export interface FormList {
   rules?: any
   // date-range-picker
   dateRangePicker?: IDateRangePicker
+  // 依赖字段
+  dependencies?: string[]
+  // 处理联动
+  onChange?: (field: any, value: any) => any
 }
 
 interface IDateRangePicker {

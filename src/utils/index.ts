@@ -19,9 +19,7 @@ export const formatSize = (size?: number) => {
  * @param fileName 要保存为的文件名
  */
 export function downloadImage(url?: string, fileName?: string) {
-  if (!url) {
-    return
-  }
+  if (!url) return
   saveAs(url, fileName)
 }
 
