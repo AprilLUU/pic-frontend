@@ -46,11 +46,11 @@ const pictureSearchFormList: FormList[] = [
     allowClear: true
   },
   {
-    label: "分类",
+    label: "情感极性分类",
     name: "category",
     field: "category",
     type: "auto-complete",
-    placeholder: "请输入分类",
+    placeholder: "请输入情感极性分类",
     options: categoryOptions,
     styleObj: { minWidth: "180px" },
     allowClear: true

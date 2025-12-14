@@ -8,7 +8,7 @@ export const batchEditPictureFormList: FormList[] = [
     name: "category",
     field: "category",
     type: "auto-complete",
-    placeholder: "请输入分类",
+    placeholder: "请输入情感极性分类",
     allowClear: true,
     options: categoryOptions
   },

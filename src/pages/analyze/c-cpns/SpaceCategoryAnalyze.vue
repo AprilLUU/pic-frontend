@@ -78,7 +78,7 @@ const options = computed(() => {
 
 <template>
   <div class="space-category-analyze">
-    <a-card title="图库分类占用">
+    <a-card title="图库情感极性分类占用">
       <v-chart
         :option="options"
         style="height: 320px; max-width: 100%"

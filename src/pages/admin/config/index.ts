@@ -18,7 +18,7 @@ const pictureFormList: FormList[] = [
     allowClear: true
   },
   {
-    label: "分类",
+    label: "情感极性分类",
     name: "category",
     field: "category",
     type: "auto-complete",

@@ -149,6 +149,12 @@ declare namespace API {
     message?: string
   }
 
+  type BaseResponseAnalyzePictureEmotion_ = {
+    code?: number
+    data?: AnalyzeResult
+    message?: string
+  }
+
   type BaseResponseSpace_ = {
     code?: number
     data?: Space
@@ -501,6 +507,11 @@ declare namespace API {
     userId?: string // Modified (原为 number)
   }
 
+  type AnalyzeResult = {
+    category?: string
+    aiResult?: string
+  }
+
   type Result = {
     actualPrompt?: string
     code?: string
@@ -516,6 +527,11 @@ declare namespace API {
 
   type SearchPictureByPictureRequest = {
     pictureId?: string // Modified
+  }
+
+  type AnalyzePictureEmotionRequest = {
+    pictureId?: string
+    text?: string
   }
 
   type Space = {

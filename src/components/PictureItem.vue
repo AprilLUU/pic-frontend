@@ -3,18 +3,21 @@ import { useRouter } from "vue-router"
 import { message } from "ant-design-vue"
 import {
   ShareAltOutlined,
-  SearchOutlined,
+  FrownOutlined,
   DeleteOutlined,
-  EditOutlined
+  EditOutlined,
+  SearchOutlined
 } from "@ant-design/icons-vue"
 import { deletePictureUsingPost } from "@/api"
+import { ref } from "vue"
+import SentimentAnalysisModal from "./SentimentAnalysisModal.vue"
 
 interface Props {
   picture: any
   onReload?: any
   showOp?: boolean
   showMeta?: boolean
-  onShare?: any,
+  onShare?: any
   canEdit?: boolean
   canDelete?: boolean
 }
@@ -38,19 +41,27 @@ const handlePictureClick = (id: string) => {
   }
 }
 
-// 编辑
-const handleSearch = (picture: API.PictureVO, e: MouseEvent) => {
-  e.stopPropagation()
-  router.push({
-    path: "/search_picture",
-    query: {
-      pictureId: picture.id
-    }
-  })
-}
-
 const handleShare = (picture: API.PictureVO, e: MouseEvent) => {
   props?.onShare(picture, e)
+}
+
+// // 编辑
+// const handleSearch = (picture: API.PictureVO, e: MouseEvent) => {
+//   e.stopPropagation()
+//   router.push({
+//     path: "/search_picture",
+//     query: {
+//       pictureId: picture.id
+//     }
+//   })
+// }
+
+// 情感分析弹窗
+const sentimentModalVisible = ref(false)
+
+const openSentimentModal = (e: MouseEvent) => {
+  e.stopPropagation()
+  sentimentModalVisible.value = true
 }
 
 // 编辑
@@ -79,6 +90,23 @@ const handleDelete = async (picture: API.PictureVO, e: MouseEvent) => {
     message.error("删除失败")
   }
 }
+
+const chooseTagColor = (tag: string) => {
+  let tagColor = "default"
+  switch (tag) {
+    case "积极":
+      tagColor = "success"
+      break
+    case "中性":
+      break
+    case "消极":
+      tagColor = "error"
+      break
+    default:
+      break
+  }
+  return tagColor
+}
 </script>
 
 <template>
@@ -96,8 +124,8 @@ const handleDelete = async (picture: API.PictureVO, e: MouseEvent) => {
       <a-card-meta v-if="showMeta" :title="picture.name">
         <template #description>
           <a-flex>
-            <a-tag color="green">
-              {{ picture.category ?? "默认" }}
+            <a-tag :color="chooseTagColor(picture.category)">
+              {{ picture.category ?? "未进行情感分析" }}
             </a-tag>
             <a-tag v-for="tag in picture.tags" :key="tag">
               {{ tag }}
@@ -106,13 +134,29 @@ const handleDelete = async (picture: API.PictureVO, e: MouseEvent) => {
         </template>
       </a-card-meta>
       <template v-if="showOp" #actions>
-        <SearchOutlined @click="(e: MouseEvent) => handleSearch(picture, e)" />
+        <!-- <SearchOutlined
+          @click="(e: MouseEvent) => handleSearch(e)"
+        /> -->
+        <FrownOutlined @click="(e: MouseEvent) => openSentimentModal(e)" />
         <ShareAltOutlined @click="(e: MouseEvent) => handleShare(picture, e)" />
-        <EditOutlined v-if="canEdit" @click="(e: MouseEvent) => handleEdit(picture, e)" />
-        <DeleteOutlined v-if="canDelete" @click="(e: MouseEvent) => handleDelete(picture, e)" />
+        <EditOutlined
+          v-if="canEdit"
+          @click="(e: MouseEvent) => handleEdit(picture, e)"
+        />
+        <DeleteOutlined
+          v-if="canDelete"
+          @click="(e: MouseEvent) => handleDelete(picture, e)"
+        />
       </template>
     </a-card>
   </div>
+
+  <!-- 情感分析弹窗 -->
+  <SentimentAnalysisModal
+    :visible="sentimentModalVisible"
+    :picture="picture"
+    @update:visible="sentimentModalVisible = $event"
+  />
 </template>
 
 <style scoped>

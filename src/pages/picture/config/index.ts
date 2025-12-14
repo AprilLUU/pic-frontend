@@ -57,12 +57,12 @@ export const pictureEditFormList: FormList[] = [
     allowClear: true
   },
   {
-    label: "分类",
+    label: "情感极性分类",
     name: "category",
     field: "category",
     type: "auto-complete",
     options: categoryOptions,
-    placeholder: "请输入分类",
+    placeholder: "请输入情感极性分类",
     allowClear: true
   },
   {

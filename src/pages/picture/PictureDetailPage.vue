@@ -5,6 +5,7 @@ import ShareModal from "@/components/ShareModal.vue"
 import { FRONTEND_BASE_URL } from "@/config"
 import { usePictureStore } from "@/stores"
 import { storeToRefs } from "pinia"
+import emitter from '@/utils/eventBus'
 
 const props = defineProps<{
   id: string
@@ -17,6 +18,11 @@ const fetchPictureDetail = () => pictureStore.getPictureVoById(props.id)
 onMounted(() => fetchPictureDetail())
 // 清空状态
 onUnmounted(() => (picture.value = {}))
+
+// 监听数据更新事件
+const onUpdated = (payload: { id: string }) => { fetchPictureDetail() }
+onMounted(() => emitter.on('picture:updated', onUpdated))
+onUnmounted(() => emitter.off('picture:updated', onUpdated))
 
 // 分享弹窗引用
 const shareModalRef = ref<typeof ShareModal>()

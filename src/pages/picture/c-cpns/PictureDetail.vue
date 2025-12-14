@@ -3,9 +3,10 @@ import {
   ShareAltOutlined,
   EditOutlined,
   DeleteOutlined,
-  DownloadOutlined
+  DownloadOutlined,
+  FrownOutlined
 } from "@ant-design/icons-vue"
-import { computed, type ComputedRef } from "vue"
+import { computed, type ComputedRef, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 
 import { useLoginUserStore } from "@/stores"
@@ -16,6 +17,7 @@ import ACCESS_ENUM from "@/access/accessEnum"
 import { storeToRefs } from "pinia"
 import usePictureOperation from "@/hooks/usePictureOperation"
 import { usePermission } from "@/hooks"
+import SentimentAnalysisModal from "../../../components/SentimentAnalysisModal.vue"
 
 interface Props {
   picture: API.PictureVO
@@ -71,6 +73,13 @@ const handledownload = () => {
 
 const handleShare = () => props?.onShare()
 
+// 情感分析弹窗状态
+const sentimentModalVisible = ref(false)
+
+const openSentimentModal = () => {
+  sentimentModalVisible.value = true
+}
+
 const { handleDelete, handleReview } = usePictureOperation()
 const handleDeleteAndJump = (id: string) => {
   handleDelete(id).then(() => {
@@ -100,7 +109,7 @@ const handleReviewAndEmit = (picture: API.PictureVO, reviewStatus: number) => {
         <a-descriptions-item label="简介">
           {{ picture.introduction ?? "-" }}
         </a-descriptions-item>
-        <a-descriptions-item label="分类">
+        <a-descriptions-item label="情感极性分类">
           {{ picture.category ?? "默认" }}
         </a-descriptions-item>
         <a-descriptions-item label="标签">
@@ -139,7 +148,13 @@ const handleReviewAndEmit = (picture: API.PictureVO, reviewStatus: number) => {
       </a-descriptions>
       <!-- 操作按钮 -->
       <a-space wrap>
-        <a-button type="primary" @click="handledownload">
+        <a-button type="primary" @click="openSentimentModal">
+          情感分析
+          <template #icon>
+            <FrownOutlined />
+          </template>
+        </a-button>
+        <a-button type="primary" ghost @click="handledownload">
           免费下载
           <template #icon>
             <DownloadOutlined />
@@ -151,7 +166,11 @@ const handleReviewAndEmit = (picture: API.PictureVO, reviewStatus: number) => {
             <ShareAltOutlined />
           </template>
         </a-button>
-        <template v-if="checkAccess(loginUser, ACCESS_ENUM.ADMIN) && !route.query?.spaceId">
+        <template
+          v-if="
+            checkAccess(loginUser, ACCESS_ENUM.ADMIN) && !route.query?.spaceId
+          "
+        >
           <a-button
             @click="
               () => handleReviewAndEmit(picture, PIC_REVIEW_STATUS_ENUM.PASS)
@@ -186,6 +205,13 @@ const handleReviewAndEmit = (picture: API.PictureVO, reviewStatus: number) => {
         </a-button>
       </a-space>
     </a-card>
+
+    <!-- 情感分析弹窗 -->
+    <SentimentAnalysisModal
+      :visible="sentimentModalVisible"
+      :picture="picture"
+      @update:visible="sentimentModalVisible = $event"
+    />
   </div>
 </template>
 

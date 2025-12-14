@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, reactive, ref, h, watch } from "vue"
+import { onMounted, onBeforeUnmount, reactive, ref, h, watch } from "vue"
 import { useRouter } from "vue-router"
 import { ColorPicker } from "vue3-colorpicker"
 import "vue3-colorpicker/style.css"
@@ -19,6 +19,7 @@ import ShareModal from "@/components/ShareModal.vue"
 import { FRONTEND_BASE_URL } from "@/config"
 import { SPACE_TYPE_ENUM, SPACE_TYPE_MAP } from "@/constants"
 import { usePermission } from "@/hooks"
+import emitter from '@/utils/eventBus'
 
 const props = defineProps<{
   id: string
@@ -63,6 +64,9 @@ const fetchData = async () => {
 }
 // 页面加载时请求一次
 onMounted(() => fetchData())
+const onUpdated = (payload: { id: string }) => { fetchData() }
+onMounted(() => emitter.on('picture:updated', onUpdated))
+onBeforeUnmount(() => emitter.off('picture:updated', onUpdated))
 // onUnmounted(() => {
 //   space.value = {}
 //   dataList.value = []

@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue"
+import { onMounted, onBeforeUnmount, reactive, ref } from "vue"
 import { storeToRefs } from "pinia"
 import PictureList from "@/components/PictureList.vue"
 import HomeCategoryTagBar from "./c-cpns/HomeCategoryTagBar.vue"
 import { useHomeStore } from "@/stores"
+import emitter from '@/utils/eventBus'
 
 const homeStore = useHomeStore()
 const { dataList, tagList, total} = storeToRefs(homeStore)
@@ -28,20 +29,28 @@ const handleSearch = (payload?: any) => {
   const { selectedCategory = "", selectedTagList = [] } = payload ?? {}
   // 重置搜索条件
   searchParams.current = 1
-  // 转换搜索参数
-  const params: API.PictureQueryRequest = {
-    ...searchParams,
-    tags: []
+  if (selectedTagList.length > 0) {
+    searchParams.tags = []
+  } else {
+    delete searchParams.tags
   }
   // 如果选择了分类，则添加到搜索参数中
-  if (selectedCategory !== "all") params.category = selectedCategory
+  if (selectedCategory !== "all") {
+    searchParams.category = selectedCategory
+  } else {
+    delete searchParams.category
+  }
   // 如果选择了标签，则添加到搜索参数中
   selectedTagList.forEach((useTag: boolean, index: number) => {
-    if (useTag) params.tags?.push(tagList.value[index])
+    if (useTag) searchParams.tags?.push(tagList.value[index])
   })
 
-  homeStore.fetchData(params)
+  fetchData()
 }
+
+const onUpdated = (payload: { id: string }) => { fetchData() }
+onMounted(() => emitter.on('picture:updated', onUpdated))
+onBeforeUnmount(() => emitter.off('picture:updated', onUpdated))
 </script>
 
 <template>

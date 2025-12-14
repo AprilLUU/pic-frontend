@@ -342,3 +342,18 @@ export async function uploadPictureByUrlUsingPost(
     ...(options || {})
   })
 }
+
+/** analyzePictureEmotion POST /api/picture/emotion/analyze */
+export async function analyzePictureEmotionUsingPost(
+  body: API.AnalyzePictureEmotionRequest,
+  options?: { [key: string]: any }
+) {
+  return request<API.BaseResponseAnalyzePictureEmotion_>("/api/picture/emotion/analyze", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    data: body,
+    ...(options || {})
+  })
+}
