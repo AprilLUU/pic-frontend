@@ -10,6 +10,7 @@ interface Props {
   onShare?: any
   canEdit?: boolean
   canDelete?: boolean
+  canAnalyzeSentiment?: boolean
 }
 withDefaults(defineProps<Props>(), {
   dataList: () => [],
@@ -17,7 +18,8 @@ withDefaults(defineProps<Props>(), {
   showMeta: true,
   showOp: false,
   canEdit: false,
-  canDelete: false
+  canDelete: false,
+  canAnalyzeSentiment: true
 })
 </script>
 
@@ -39,6 +41,7 @@ withDefaults(defineProps<Props>(), {
             :onShare="onShare"
             :canEdit="canEdit"
             :canDelete="canDelete"
+            :canAnalyzeSentiment="canAnalyzeSentiment"
           />
         </a-list-item>
       </template>

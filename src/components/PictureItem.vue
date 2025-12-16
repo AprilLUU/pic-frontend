@@ -6,7 +6,7 @@ import {
   FrownOutlined,
   DeleteOutlined,
   EditOutlined,
-  SearchOutlined
+  // SearchOutlined
 } from "@ant-design/icons-vue"
 import { deletePictureUsingPost } from "@/api"
 import { ref } from "vue"
@@ -20,11 +20,12 @@ interface Props {
   onShare?: any
   canEdit?: boolean
   canDelete?: boolean
+  canAnalyzeSentiment?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   showOp: false,
-  showMeta: true
+  showMeta: true,
 })
 const spaceId = props.picture?.spaceId
 const query = spaceId ? { spaceId } : {}
@@ -137,7 +138,7 @@ const chooseTagColor = (tag: string) => {
         <!-- <SearchOutlined
           @click="(e: MouseEvent) => handleSearch(e)"
         /> -->
-        <FrownOutlined @click="(e: MouseEvent) => openSentimentModal(e)" />
+        <FrownOutlined v-if="canAnalyzeSentiment" @click="(e: MouseEvent) => openSentimentModal(e)" />
         <ShareAltOutlined @click="(e: MouseEvent) => handleShare(picture, e)" />
         <EditOutlined
           v-if="canEdit"

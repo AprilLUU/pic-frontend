@@ -148,7 +148,7 @@ const handleReviewAndEmit = (picture: API.PictureVO, reviewStatus: number) => {
       </a-descriptions>
       <!-- 操作按钮 -->
       <a-space wrap>
-        <a-button type="primary" @click="openSentimentModal">
+        <a-button v-if="canEdit" type="primary" @click="openSentimentModal">
           情感分析
           <template #icon>
             <FrownOutlined />

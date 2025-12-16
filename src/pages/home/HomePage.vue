@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, reactive, ref } from "vue"
+import { onMounted, onBeforeUnmount, reactive, ref, computed } from "vue"
 import { storeToRefs } from "pinia"
 import PictureList from "@/components/PictureList.vue"
 import HomeCategoryTagBar from "./c-cpns/HomeCategoryTagBar.vue"
-import { useHomeStore } from "@/stores"
+import { useHomeStore, useLoginUserStore } from "@/stores"
+import ACCESS_ENUM from "@/access/accessEnum"
+import checkAccess from "@/access/checkAccess"
 import emitter from '@/utils/eventBus'
 
 const homeStore = useHomeStore()
@@ -16,6 +18,12 @@ const searchParams = reactive<API.PictureQueryRequest>({
   sortField: "createTime",
   sortOrder: "descend"
 })
+
+const loginUserStore = useLoginUserStore()
+const { loginUser } = storeToRefs(loginUserStore)
+const canAnalyzeSentiment = computed(() =>
+  checkAccess(loginUser.value, ACCESS_ENUM.ADMIN)
+)
 
 const fetchData = async () => {
   loading.value = true
@@ -68,7 +76,7 @@ onBeforeUnmount(() => emitter.off('picture:updated', onUpdated))
     <!-- 分类 + 标签 -->
     <HomeCategoryTagBar @search="handleSearch" />
     <!-- 图片列表 -->
-    <PictureList :dataList="dataList" :loading="loading" :showOp="true" />
+    <PictureList :dataList="dataList" :loading="loading" :showOp="true" :canAnalyzeSentiment="canAnalyzeSentiment" />
     <a-pagination
       style="text-align: right"
       v-model:current="searchParams.current"
